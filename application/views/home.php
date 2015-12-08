@@ -10,20 +10,7 @@
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/flaticon.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/style.css')?>"  media="screen,projection"/>
 
-    <!-- Import Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
-    <script>
-      function initialize() {
-        var mapCanvas = document.getElementById('map');
-        var mapOptions = {
-          center: new google.maps.LatLng(-6.3878438,106.7477563),
-          zoom: 15,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        }
-        var map = new google.maps.Map(mapCanvas, mapOptions);
-      }
-      google.maps.event.addDomListener(window, 'load', initialize);
-    </script>
+    
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -37,8 +24,8 @@
           <div class="center-align">
             <img class="responsive-img" src="<?php echo base_url('assets/img/logocs.png')?>"/>
           </div>
-          <button class="btn"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
-          <button class="btn"><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
+          <button onclick="getLocation()" class="btn"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
+          <button onclick="getNearest()" class="btn"><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
         </div>
 
         <ul class="tabs">
@@ -118,6 +105,10 @@
     <!--Import jQuery before materialize.js-->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="<?php echo base_url('assets/js/materialize.min.js')?>"></script>
+    <script type="text/javascript" src="<?php echo base_url('assets/js/js.js')?>"></script>
+    <!-- Import Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&libraries=places&callback=initialize" async defer></script>
+    
 
     <script type="text/javascript">
         $(document).ready(function(){
