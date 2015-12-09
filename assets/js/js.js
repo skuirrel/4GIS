@@ -1,5 +1,8 @@
 var x = document.getElementById("");
-var toDivAll = document.getElementById("all-result");
+var toDivAll = document.getElementById("div-all");
+var toDivRS = document.getElementById("div-rs");
+var toDivApotek = document.getElementById("div-apotek");
+var toDivKlinik = document.getElementById("div-klinik");
 var btnMyLoc = document.getElementById("btn-myloc");
 var btnNearest = document.getElementById("btn-nearest");
 var map;
@@ -114,8 +117,8 @@ function createMarker(place) {
     animation: google.maps.Animation.DROP
   });
 
-  var service1 = new google.maps.places.PlacesService(map);
-  service1.getDetails({
+  var service = new google.maps.places.PlacesService(map);
+  service.getDetails({
     placeId: place.place_id
   }, callback2);
 
@@ -123,18 +126,26 @@ function createMarker(place) {
 
 function callback2(details, status){
   if (status == google.maps.places.PlacesServiceStatus.OK) {
-    showToDiv(details);
+    if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS")){
+      showToDivRS(details);
+    }
+    else if((details.name.toLowerCase().indexOf("apotek") > -1) || (details.name.toLowerCase().indexOf("apotik") > -1)){
+      showToDivApotek(details);
+    }
+    else if((details.name.toLowerCase().indexOf("klinik") > -1) || (details.name.toLowerCase().indexOf("dokter") > -1)){
+      showToDivKlinik(details);
+    }
+    else{
+
+    }
+      
   }
 }
 
-function showToDiv(details){
-  // var photos = place.photos;
-  // var getPhoto = photos[0].getUrl();
-  // if (!photos) {
-  //   getPhoto='http://depokdentalcity.com/wp-content/uploads/2013/01/Lapangan-Parkir-Mobil-dan-Motor-yang-Luas.jpg';
-  // }
 
-  toDivAll.innerHTML += 
+function showToDivRS(details){
+  // toDivRS.empty();
+  toDivRS.innerHTML += 
     '<div class="card col s12">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
@@ -166,6 +177,97 @@ function showToDiv(details){
       '</div>';
 }
 
+function showToDivApotek(details){
+  // toDivApotek.empty();
+  toDivApotek.innerHTML += 
+    '<div class="card col s12">'+
+        '<h5>'+details.name+'</h5>'+
+        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_address+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_phone_number+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+        '</div>'+
+      '</div>';
+}
+
+function showToDivKlinik(details){
+  // toDivKlinik.empty();
+  toDivKlinik.innerHTML += 
+    '<div class="card col s12">'+
+        '<h5>'+details.name+'</h5>'+
+        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_address+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_phone_number+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+        '</div>'+
+      '</div>';
+}
+
+
+function showDiv(e){
+  if(e.value == 0){
+    toDivApotek.style.display = "block";
+    toDivRS.style.display = "block";
+    toDivKlinik.style.display = "block";
+  }
+  else if(e.value == 1){
+    toDivApotek.style.display = "block";
+    toDivRS.style.display = "none";
+    toDivKlinik.style.display = "none";
+  }
+  else if(e.value == 2){
+    toDivApotek.style.display = "none";
+    toDivRS.style.display = "block";
+    toDivKlinik.style.display = "none";
+  }
+  else{
+    toDivApotek.style.display = "none";
+    toDivRS.style.display = "none";
+    toDivKlinik.style.display = "block";
+  }
+}
 
 function getLocation() {
     if (navigator.geolocation) {
@@ -200,6 +302,10 @@ function showPosition(position) {
 
 function getNearest(){
 	var myLocation = new google.maps.LatLng(myLat,myLng);
+
+  toDivApotek.innerHTML="";
+  toDivRS.innerHTML="";
+  toDivKlinik.innerHTML="";
 
 	var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({

@@ -27,10 +27,19 @@
           <button onclick="getLocation()" class="btn" id="btn-myloc"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
           <button onclick="getNearest()" class="btn" id="btn-nearest" disabled><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
         </div>
-        <form class="col s10 offset-s1">
+        <div class="col s10 offset-s1">
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
-        </form>
+        </div>
+        <div class="input-field col s12">
+            <select class="icons" onchange="showDiv(this)">
+              <option value="0" selected>Semua Kategori</option>
+              <option value="1" data-icon="images/sample-1.jpg" class="left circle">Apotek</option>
+              <option value="2" data-icon="images/office.jpg" class="left circle">Rumah Sakit</option>
+              <option value="3" data-icon="images/yuna.jpg" class="left circle">Klinik</option>
+            </select>
+            <label>Pilih Kategori</label>
+          </div>
 
        <!--  <ul class="tabs">
           <li class="tab col s3 ap"><a class="active" href="#div-all">SEMUA</a></li>
@@ -38,72 +47,20 @@
           <li class="tab col s3 rs"><a href="#div-rs">RUMAH SAKIT</a></li>
           <li class="tab col s3 kl"><a href="#div-klinik">KLINIK</a></li>
         </ul> -->
-        <div class="input-field col s12" style="margin-bottom:100px">
-    <select>
-      <option value="" disabled selected>Choose your option</option>
-      <option value="1">Option 1</option>
-      <option value="2">Option 2</option>
-      <option value="3">Option 3</option>
-    </select>
-    <label>Materialize Select</label>
-  </div>
+        
 
         <div id="div-all" class="col s12">
           <br>
-          <div id="all-result">
+          <div id="div-apotek">
+          </div>
+          <div id="div-rs" >
+          </div>
+          <div id="div-klinik">
           </div>
         </div>
-        <div id="div-apotek" class="col s12">
-          <br>
-          <div id="apotek-result">
-            <div class="card col s12">
-              <h5>Apotek Kimia Farma</h5>
-              <img class="responsive-img" src="http://depokdentalcity.com/wp-content/uploads/2013/01/Lapangan-Parkir-Mobil-dan-Motor-yang-Luas.jpg"/>
-              <button class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> 
-              <div class="row valign-wrapper">
-                <div class="col s2 valign">
-                  <div class="chip teal accent-4">
-                    <i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>
-                  </div>
-                </div>
-                <div class="col s10 valign">
-                  Jl. Margonda Raya No. 328, Beji, Kota Depok, Jawa Barat, 16424
-                </div>
-              </div>
-              <div class="row valign-wrapper">
-                <div class="col s2 valign">
-                  <div class="chip teal accent-4">
-                    <i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>
-                  </div>
-                </div>
-                <div class="col s10 valign">
-                  (021) 78884611
-                </div>
-              </div>
-              <div class="row valign-wrapper">
-                <div class="col s2 valign">
-                  <div class="chip teal accent-4">
-                    <i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>
-                  </div>
-                </div>
-                <div class="col s10 valign">
-                  Buka 24 jam
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div id="div-rs" class="col s12">
-          <br>
-          <div id="rs-result">
-          </div>
-        </div>
-        <div id="div-klinik" class="col s12">
-          <br>
-          <div id="klinik-result">
-          </div>
-        </div>
+        
       </div>
+
       <div class="col s8" style="padding:0px;">
         <div id="map">
             
@@ -123,6 +80,7 @@
         $(document).ready(function(){
           $('ul.tabs').tabs();
           $('input#input_text, textarea#textarea1').characterCounter();
+          $('select').material_select();
         });
 
     </script>
