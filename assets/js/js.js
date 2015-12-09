@@ -65,28 +65,30 @@ function initialize() {
       }
 
       // Clear out the old markers.
-      markers.forEach(function(marker) {
-        marker.setMap(null);
-      });
-      markers = [];
+      // markers.forEach(function(marker) {
+      //   marker.setMap(null);
+      // });
+      // markers = [];
 
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
+
       places.forEach(function(place) {
-        var icon = {
-          url: place.icon,
-          size: new google.maps.Size(71, 71),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(17, 34),
-          scaledSize: new google.maps.Size(25, 25)
-        };
+        // var icon = {
+        //   url: place.icon,
+        //   size: new google.maps.Size(71, 71),
+        //   origin: new google.maps.Point(0, 0),
+        //   anchor: new google.maps.Point(17, 34),
+        //   scaledSize: new google.maps.Size(25, 25)
+        // };
 
         // Create a marker for each place.
         markers.push(new google.maps.Marker({
           map: map,
-          icon: icon,
+          // icon: icon,
           title: place.name,
-          position: place.geometry.location
+          position: place.geometry.location,
+          animation: google.maps.Animation.DROP
         }));
 
         if (place.geometry.viewport) {
@@ -111,10 +113,25 @@ function callback(results, status) {
 
 function createMarker(place) {
   var placeLoc = place.geometry.location;
+  var image = 'http://localhost/sig/assets/img/marker-places.png';
+
+  var infowindow = new google.maps.InfoWindow({
+      content: place.name
+  });
+
   var marker = new google.maps.Marker({
     map: map,
     position: place.geometry.location,
+    icon: image,
     animation: google.maps.Animation.DROP
+  });
+
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
+    // var str = '#' + place.name.replace(/\s+/g, '');
+    // $('html, body').animate({
+    //     scrollTop: $(str).offset().top
+    // }, 2000);
   });
 
   var service = new google.maps.places.PlacesService(map);
@@ -126,7 +143,7 @@ function createMarker(place) {
 
 function callback2(details, status){
   if (status == google.maps.places.PlacesServiceStatus.OK) {
-    if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS")){
+    if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
       showToDivRS(details);
     }
     else if((details.name.toLowerCase().indexOf("apotek") > -1) || (details.name.toLowerCase().indexOf("apotik") > -1)){
@@ -145,8 +162,9 @@ function callback2(details, status){
 
 function showToDivRS(details){
   // toDivRS.empty();
+  var str = details.name.replace(/\s+/g, '');
   toDivRS.innerHTML += 
-    '<div class="card col s12">'+
+    '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
         '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
@@ -179,8 +197,9 @@ function showToDivRS(details){
 
 function showToDivApotek(details){
   // toDivApotek.empty();
+  var str = details.name.replace(/\s+/g, '');
   toDivApotek.innerHTML += 
-    '<div class="card col s12">'+
+    '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
         '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
@@ -213,8 +232,9 @@ function showToDivApotek(details){
 
 function showToDivKlinik(details){
   // toDivKlinik.empty();
+  var str = details.name.replace(/\s+/g, '');
   toDivKlinik.innerHTML += 
-    '<div class="card col s12">'+
+    '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
         '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
@@ -290,8 +310,10 @@ function showPosition(position) {
     }
 
   map = new google.maps.Map(mapCanvas, mapOptions);
+  var image = 'http://localhost/sig/assets/img/marker-home.png';
   var marker = new google.maps.Marker({
     map: map,
+    icon: image,
     position: new google.maps.LatLng(position.coords.latitude,position.coords.longitude)
   });
 

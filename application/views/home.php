@@ -34,9 +34,9 @@
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>
-              <option value="1" data-icon="images/sample-1.jpg" class="left circle">Apotek</option>
-              <option value="2" data-icon="images/office.jpg" class="left circle">Rumah Sakit</option>
-              <option value="3" data-icon="images/yuna.jpg" class="left circle">Klinik</option>
+              <option value="1">Apotek</option>
+              <option value="2">Rumah Sakit</option>
+              <option value="3">Klinik</option>
             </select>
             <label>Pilih Kategori</label>
           </div>
