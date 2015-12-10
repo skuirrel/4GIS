@@ -201,12 +201,20 @@ function callback2(details, status){
 
 function showToDivRS(details){
   // toDivRS.empty();
+  var url;
+  if(typeof details.photos !== 'undefined' || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+  
   var str = details.name.replace(/\s+/g, '');
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
-        // '<h5>'+details.name+'</h5>'+
+        '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -237,12 +245,20 @@ function showToDivRS(details){
 
 function showToDivApotek(details){
   // toDivApotek.empty();
+ var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[1].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivApotek.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         // '<h5> id:'+details.id+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -273,11 +289,19 @@ function showToDivApotek(details){
 
 function showToDivKlinik(details){
   // toDivKlinik.empty();
+  var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivKlinik.innerHTML += 
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
