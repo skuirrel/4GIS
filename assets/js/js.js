@@ -109,7 +109,36 @@ function initialize() {
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
+
+
+
+
+  // var place_id = results[i].place_id;
+
+  // var xhttp = new XMLHttpRequest();
+  // xhttp.onreadystatechange = function() {
+  //   if (xhttp.readyState == 4 && xhttp.status == 200) {
+  //     var response = xmlhttp.responseText;
+  //     var data = JSON.parse(response);
+  //     namaApotek = data;
+  //   }
+  // };
+  // xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation/"+place_id, true);
+  // xhttp.send();
+
+
+  //   if(namaApotek.length!=0) {
+  //     createMarker(results[i]);
+  //   }
+
+
+
+
+
+
+
       createMarker(results[i]);
+
     }
   }
 }
@@ -159,6 +188,7 @@ function clearMarkers() {
 }
 
 function callback2(details, status){
+
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
       showToDivRS(details);
@@ -407,4 +437,18 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   });
   clearMarkers();
 
+}
+
+function loadDoc() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200) {
+      var response = xmlhttp.responseText;
+      var data = JSON.parse(response);
+      document.getElementById("demo").innerHTML = data;
+
+    }
+  };
+  xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation", true);
+  xhttp.send();
 }

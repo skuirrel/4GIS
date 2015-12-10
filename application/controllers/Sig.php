@@ -12,11 +12,13 @@
          public function getLocation($id)
         {
             $this->load->model('sig_model');
-            $isInList = $this->sig_model->isInList($id);
-            if($isInList) {
-                $data = $this->sig_model->getList($id);
-            }
-            $this->load->view('home', $data);
+            // $isInList = $this->sig_model->isInList($id);
+            $data['nama'] = $this->sig_model->getList($id);
+            // if(sizeof($namanya)!=0) {
+            //     $data['nama'] = $namanya;
+            // }
+            // $this->load->view('home', $data);
+            echo json_encode($data['nama']);
         }
 
         // }

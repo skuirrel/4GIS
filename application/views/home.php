@@ -15,6 +15,7 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Cepat Sembuh!</title>
+<!--     <title><?php echo $name ?></title> -->
   </head>
 
   <body>
@@ -30,7 +31,9 @@
         <div class="col s10 offset-s1">
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
-        </div>
+        </div>        
+        <div id="demo"><h2>TESS</h2></div>
+        <button type="button" onclick="loadDoc()">Change Content</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>

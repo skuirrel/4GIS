@@ -22,13 +22,19 @@
 
 		function getList($id)
 		{
-			$this->db->select('*');
+			$this->db->select('nama');
 	        $this->db->from('list');
 	        $this->db->where('id',$id);    
 
 			$result = $this->db->get()->result();
-			return $result;
 			
+			foreach ($result as $key => $value) 
+			{
+				$name=$value->nama;
+			}
+
+			return $name;
+
 		}
 	} // end of Koleksi
 
