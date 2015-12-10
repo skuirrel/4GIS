@@ -34,6 +34,7 @@
         </div>        
         <div id="demo"><h2>TESS</h2></div>
         <button type="button" onclick="loadDoc()">Change Content</button>
+        <button type="button" onclick="fromDB()">Database</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>
@@ -76,7 +77,7 @@
     <script type="text/javascript" src="<?php echo base_url('assets/js/materialize.min.js')?>"></script>
     <script type="text/javascript" src="<?php echo base_url('assets/js/js.js')?>"></script>
     <!-- Import Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&libraries=places&callback=initialize" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&callback=initialize&libraries=places,geometry" async defer></script>
     
 
     <script type="text/javascript">

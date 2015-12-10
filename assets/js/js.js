@@ -49,6 +49,7 @@ function initialize() {
 
     // Create the search box and link it to the UI element.
     var input = document.getElementById('all-search');
+    
     var searchBox = new google.maps.places.SearchBox(input);
     // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
@@ -76,6 +77,8 @@ function initialize() {
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
 
+      
+
       places.forEach(function(place) {
         // var icon = {
         //   url: place.icon,
@@ -84,15 +87,23 @@ function initialize() {
         //   anchor: new google.maps.Point(17, 34),
         //   scaledSize: new google.maps.Size(25, 25)
         // };
-
-        // Create a marker for each place.
-        markers.push(new google.maps.Marker({
+        var infowindow = new google.maps.InfoWindow({
+          content: place.name + '<br>' + place.place_id
+        });
+        var marker = new google.maps.Marker({
           map: map,
           // icon: icon,
           title: place.name,
           position: place.geometry.location,
           animation: google.maps.Animation.DROP
-        }));
+        })
+
+        // Create a marker for each place.
+        markers.push(marker);
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
 
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
@@ -119,7 +130,7 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
 
   var infowindow = new google.maps.InfoWindow({
-      content: place.name
+      content: place.name + '<br>' + place.place_id
   });
 
   var marker = new google.maps.Marker({
@@ -193,8 +204,8 @@ function showToDivRS(details){
   var str = details.name.replace(/\s+/g, '');
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
-        '<h5>'+details.name+'</h5>'+
-        // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
+        // '<h5>'+details.name+'</h5>'+
+        // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
@@ -230,9 +241,9 @@ function showToDivApotek(details){
   toDivApotek.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<h5> id:'+details.id+'</h5>'+
+        // '<h5> id:'+details.id+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -339,7 +350,7 @@ function showPosition(position) {
  //      mapTypeId: google.maps.MapTypeId.ROADMAP
  //    }
 
-  // map = new google.maps.Map(mapCanvas, mapOptions);
+ //  map = new google.maps.Map(mapCanvas, mapOptions);
   var image = 'http://localhost/sig/assets/img/marker-home.png';
   var marker = new google.maps.Marker({
     map: map,
@@ -403,6 +414,7 @@ function getDirection(latDest, lngDest) {
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest) {
   var myLocation = new google.maps.LatLng(myLat,myLng);
+  var myDestination = new google.maps.LatLng(latDest,lngDest);
 
   directionsService.route({
     origin: myLocation,
@@ -417,7 +429,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
     }
   });
   clearMarkers();
+  var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
+  $("#demo").append(str + " km") ;
 }
 
 function loadDoc() {
@@ -434,3 +448,4 @@ function loadDoc() {
   xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation", true);
   xhttp.send();
 }
+
