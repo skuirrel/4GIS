@@ -8,8 +8,8 @@
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/materialize.min.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/flaticon.css')?>"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/style.css')?>"  media="screen,projection"/>
-
+    <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/style.css')?>"  media="screen,projection"/> 
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&v=3&libraries=geometry"></script>
     
 
     <!--Let browser know website is optimized for mobile-->
@@ -25,7 +25,7 @@
             <img class="responsive-img" src="<?php echo base_url('assets/img/logocs.png')?>"/>
           </div>
           <button onclick="getLocation()" class="btn" id="btn-myloc"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
-          <button onclick="getNearest()" class="btn" id="btn-nearest" disabled><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
+          <button onclick="getNearest()" class="btn" id="btn-nearest" disabled><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button> 
         </div>
         <div class="col s10 offset-s1">
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
@@ -76,6 +76,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&libraries=places&callback=initialize" async defer></script>
     
 
+
     <script type="text/javascript">
         $(document).ready(function(){
           $('ul.tabs').tabs();
@@ -84,5 +85,7 @@
         });
 
     </script>
+
+
   </body>
 </html>

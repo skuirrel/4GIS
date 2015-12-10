@@ -353,3 +353,5 @@ function getNearest(){
       types: ["hospital", "pharmacy", "dentist", "doctor"]
     }, callback);
 }
+
+
