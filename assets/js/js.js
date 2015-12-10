@@ -150,7 +150,11 @@ function createMarker(place) {
 }
 
 function clearMarkers() {
-  setMapOnAll(null);
+  // setMapOnAll(null);
+  markers.forEach(function(marker) {
+    marker.setMap(null);
+  });
+  markers = [];
 }
 
 function callback2(details, status){
@@ -368,14 +372,14 @@ function getNearest(){
     }, callback);
 }
 
-function getDirection(location) {
+function getDirection(id) {
   var directionsService = new google.maps.DirectionsService;
   var directionsDisplay = new google.maps.DirectionsRenderer;
   directionsDisplay.setMap(map);
   calculateAndDisplayRoute(directionsService, directionsDisplay, location);
 }
 
-function calculateAndDisplayRoute(directionsService, directionsDisplay, location) {
+function calculateAndDisplayRoute(directionsService, directionsDisplay, lat, lng) {
   var myLocation = new google.maps.LatLng(myLat,myLng);
 
   directionsService.route({
