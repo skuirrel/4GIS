@@ -34,7 +34,6 @@
         </div>        
         <div id="demo"><h2>TESS</h2></div>
         <button type="button" onclick="loadDoc()">Change Content</button>
-        <button type="button" onclick="fromDB()">Database</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>

@@ -85,15 +85,23 @@ function initialize() {
         //   anchor: new google.maps.Point(17, 34),
         //   scaledSize: new google.maps.Size(25, 25)
         // };
-
-        // Create a marker for each place.
-        markers.push(new google.maps.Marker({
+        var infowindow = new google.maps.InfoWindow({
+          content: place.name + '<br>' + place.place_id
+        });
+        var marker = new google.maps.Marker({
           map: map,
           // icon: icon,
           title: place.name,
           position: place.geometry.location,
           animation: google.maps.Animation.DROP
-        }));
+        })
+
+        // Create a marker for each place.
+        markers.push(marker);
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
 
         if (place.geometry.viewport) {
           // Only geocodes have viewport.
@@ -200,12 +208,20 @@ function callback2(details, status){
 
 function showToDivRS(details){
   // toDivRS.empty();
+  var url;
+  if(typeof details.photos !== 'undefined' || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+  
   var str = details.name.replace(/\s+/g, '');
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<h5> id:'+details.place_id+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -236,13 +252,21 @@ function showToDivRS(details){
 
 function showToDivApotek(details){
   // toDivApotek.empty();
+ var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[1].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivApotek.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<h5> id:'+details.place_id+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        // '<h5> id:'+details.id+'</h5>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -272,12 +296,19 @@ function showToDivApotek(details){
 
 function showToDivKlinik(details){
   // toDivKlinik.empty();
+  var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivKlinik.innerHTML += 
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<h5> id:'+details.place_id+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -305,6 +336,7 @@ function showToDivKlinik(details){
         '</div>'+
       '</div>';
 }
+
 
 
 function showDiv(e){
@@ -414,6 +446,7 @@ function getDirection(latDest, lngDest) {
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest) {
   var myLocation = new google.maps.LatLng(myLat,myLng);
+  var myDestination = new google.maps.LatLng(latDest,lngDest);
 
   directionsService.route({
     origin: myLocation,
@@ -428,9 +461,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
     }
   });
   clearMarkers();
+  var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
+  $("#demo").append(str + " km") ;
 }
-
 function loadDoc() {
   var place_id = 'ChIJgZi6JTnsaS4R0a7kLTngTA8';
   var xhttp = new XMLHttpRequest();
