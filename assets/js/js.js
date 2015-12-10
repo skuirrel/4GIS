@@ -159,6 +159,17 @@ function clearMarkers() {
 }
 
 function callback2(details, status){
+
+
+  // var xhttp = new XMLHttpRequest();
+  // xhttp.onreadystatechange = function() {
+  //   if (xhttp.readyState == 4 && xhttp.status == 200) {
+  //     document.getElementById("demo").innerHTML = xhttp.responseText;
+  //   }
+  // };
+  // xhttp.open("GET", "http://localhost/sig/index.php/sig/getLocation", true);
+  // xhttp.send();
+
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
       showToDivRS(details);
@@ -407,4 +418,19 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   });
   clearMarkers();
 
+}
+
+function loadDoc() {
+  // var place_id = e763722d7423fe24040d41beba0df2a475700d81;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200) {
+      // var response = xmlhttp.responseText;
+      // var data = JSON.parse(response);
+      // document.getElementById("demo").innerHTML = data;
+      document.getElementById("demo").innerHTML = xhttp.responseText;
+    }
+  };
+  xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation", true);
+  xhttp.send();
 }
