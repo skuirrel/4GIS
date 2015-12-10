@@ -1,17 +1,18 @@
-var x = document.getElementById("");
+// var x = document.getElementById("");
 var toDivAll = document.getElementById("div-all");
 var toDivRS = document.getElementById("div-rs");
 var toDivApotek = document.getElementById("div-apotek");
 var toDivKlinik = document.getElementById("div-klinik");
 var btnMyLoc = document.getElementById("btn-myloc");
 var btnNearest = document.getElementById("btn-nearest");
+// var btnDirection = document.getElementById("btn-direction");
 var map;
 var markers = [];
 
 
 function initialize() {
     var mapCanvas = document.getElementById('map');
-    var depok = new google.maps.LatLng(-6.3878438,106.7477563)
+    var depok = new google.maps.LatLng(-6.3680686,106.82737)
     var mapOptions = {
       center: depok,
       zoom: 15,
@@ -23,9 +24,9 @@ function initialize() {
 
     var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
-    	location: depok,
-    	radius: 2000,
-    	name: "apotek",
+      location: depok,
+      radius: 2000,
+      name: "apotek",
       types: ["hospital", "pharmacy", "dentist", "doctor"]
     }, callback);
 
@@ -184,7 +185,7 @@ function showToDivRS(details){
         '<h5>'+details.name+'</h5>'+
         // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDistance()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -220,7 +221,7 @@ function showToDivApotek(details){
         '<h5>'+details.name+'</h5>'+
         '<h5> id:'+details.id+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDistance()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -255,7 +256,7 @@ function showToDivKlinik(details){
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDistance()'+details.location+')" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -314,20 +315,20 @@ function getLocation() {
         x.innerHTML = "Geolocation is not supported by this browser.";
     }
 }
-f
+
 function showPosition(position) {
-	var mapCanvas = document.getElementById('map');
+  var mapCanvas = document.getElementById('map');
 
-	window.myLat = position.coords.latitude;
-	window.myLng = position.coords.longitude;
-	
-	var mapOptions = {
-      center: new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
-      zoom: 15,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    }
+  window.myLat = position.coords.latitude;
+  window.myLng = position.coords.longitude;
+  
+  // var mapOptions = {
+ //      center: new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
+ //      zoom: 15,
+ //      mapTypeId: google.maps.MapTypeId.ROADMAP
+ //    }
 
-  map = new google.maps.Map(mapCanvas, mapOptions);
+  // map = new google.maps.Map(mapCanvas, mapOptions);
   var image = 'http://localhost/sig/assets/img/marker-home.png';
   var marker = new google.maps.Marker({
     map: map,
@@ -335,19 +336,21 @@ function showPosition(position) {
     position: new google.maps.LatLng(position.coords.latitude,position.coords.longitude)
   });
 
-  marker.setMap(map);
+  // marker.setMap(map);
+  markers.push(marker);
   marker.setAnimation(google.maps.Animation.BOUNCE);
   btnNearest.disabled = false;
+  $('.btn-direction').prop('disabled', false);
 }
 
 function getNearest(){
-	var myLocation = new google.maps.LatLng(myLat,myLng);
+  var myLocation = new google.maps.LatLng(myLat,myLng);
 
   toDivApotek.innerHTML="";
   toDivRS.innerHTML="";
   toDivKlinik.innerHTML="";
 
-	var service1 = new google.maps.places.PlacesService(map);
+  var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
       location: myLocation,
       radius: 2000,
@@ -372,20 +375,27 @@ function getNearest(){
     }, callback);
 }
 
-
-function getDirection(id) {
+function getDirection(latDest, lngDest) {
   var directionsService = new google.maps.DirectionsService;
+  // var directionsDisplay;
+
+  if(directionsDisplay != null) {
+      directionsDisplay.setMap(null);
+      var directionsDisplay = null;
+  }
   var directionsDisplay = new google.maps.DirectionsRenderer;
+
   directionsDisplay.setMap(map);
-  calculateAndDisplayRoute(directionsService, directionsDisplay, location);
+  
+  calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
 }
 
-function calculateAndDisplayRoute(directionsService, directionsDisplay, lat, lng) {
+function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest) {
   var myLocation = new google.maps.LatLng(myLat,myLng);
 
   directionsService.route({
     origin: myLocation,
-    destination: {lat: -6.36191397, lng: 106.81653784},
+    destination: {lat: latDest, lng: lngDest},
     // destination: {location},
     travelMode: google.maps.TravelMode.DRIVING
   }, function(response, status) {
@@ -396,10 +406,5 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, lat, lng
     }
   });
   clearMarkers();
-}
 
-function getDistance(){
-   var myLocation = new google.maps.LatLng(myLat,myLng);
-
-  alert(myLocation);
 }
