@@ -109,36 +109,7 @@ function initialize() {
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
-
-
-
-
-  // var place_id = results[i].place_id;
-
-  // var xhttp = new XMLHttpRequest();
-  // xhttp.onreadystatechange = function() {
-  //   if (xhttp.readyState == 4 && xhttp.status == 200) {
-  //     var response = xmlhttp.responseText;
-  //     var data = JSON.parse(response);
-  //     namaApotek = data;
-  //   }
-  // };
-  // xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation/"+place_id, true);
-  // xhttp.send();
-
-
-  //   if(namaApotek.length!=0) {
-  //     createMarker(results[i]);
-  //   }
-
-
-
-
-
-
-
       createMarker(results[i]);
-
     }
   }
 }
@@ -188,6 +159,16 @@ function clearMarkers() {
 }
 
 function callback2(details, status){
+
+
+  // var xhttp = new XMLHttpRequest();
+  // xhttp.onreadystatechange = function() {
+  //   if (xhttp.readyState == 4 && xhttp.status == 200) {
+  //     document.getElementById("demo").innerHTML = xhttp.responseText;
+  //   }
+  // };
+  // xhttp.open("GET", "http://localhost/sig/index.php/sig/getLocation", true);
+  // xhttp.send();
 
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
@@ -440,13 +421,14 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
 }
 
 function loadDoc() {
+  // var place_id = e763722d7423fe24040d41beba0df2a475700d81;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
-      var response = xmlhttp.responseText;
-      var data = JSON.parse(response);
-      document.getElementById("demo").innerHTML = data;
-
+      // var response = xmlhttp.responseText;
+      // var data = JSON.parse(response);
+      // document.getElementById("demo").innerHTML = data;
+      document.getElementById("demo").innerHTML = xhttp.responseText;
     }
   };
   xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation", true);
