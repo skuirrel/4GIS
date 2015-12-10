@@ -6,6 +6,7 @@ var toDivKlinik = document.getElementById("div-klinik");
 var btnMyLoc = document.getElementById("btn-myloc");
 var btnNearest = document.getElementById("btn-nearest");
 var map;
+var markers = [];
 
 
 function initialize() {
@@ -17,6 +18,7 @@ function initialize() {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(mapCanvas, mapOptions);
+
 
 
     var service1 = new google.maps.places.PlacesService(map);
@@ -54,7 +56,7 @@ function initialize() {
       searchBox.setBounds(map.getBounds());
     });
 
-    var markers = [];
+    // var markers = [];
     // Listen for the event fired when the user selects a prediction and retrieve
     // more details for that place.
     searchBox.addListener('places_changed', function() {
@@ -126,6 +128,8 @@ function createMarker(place) {
     animation: google.maps.Animation.DROP
   });
 
+
+
   marker.addListener('click', function() {
     infowindow.open(map, marker);
     // var str = '#' + place.name.replace(/\s+/g, '');
@@ -134,11 +138,19 @@ function createMarker(place) {
     // }, 2000);
   });
 
+  markers.push(marker);
+
   var service = new google.maps.places.PlacesService(map);
   service.getDetails({
     placeId: place.place_id
   }, callback2);
 
+
+
+}
+
+function clearMarkers() {
+  setMapOnAll(null);
 }
 
 function callback2(details, status){
@@ -166,6 +178,7 @@ function showToDivRS(details){
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
+        // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
         '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
@@ -201,8 +214,9 @@ function showToDivApotek(details){
   toDivApotek.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
+        '<h5> id:'+details.id+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="clearMarkers()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -237,7 +251,7 @@ function showToDivKlinik(details){
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         '<img class="responsive-img" src="'+details.icon+'"/>'+
-        '<button onclick="getDirection()" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.location+')" class="btn" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -296,7 +310,7 @@ function getLocation() {
         x.innerHTML = "Geolocation is not supported by this browser.";
     }
 }
-
+f
 function showPosition(position) {
 	var mapCanvas = document.getElementById('map');
 
@@ -352,4 +366,29 @@ function getNearest(){
       name: "klinik",
       types: ["hospital", "pharmacy", "dentist", "doctor"]
     }, callback);
+}
+
+function getDirection(location) {
+  var directionsService = new google.maps.DirectionsService;
+  var directionsDisplay = new google.maps.DirectionsRenderer;
+  directionsDisplay.setMap(map);
+  calculateAndDisplayRoute(directionsService, directionsDisplay, location);
+}
+
+function calculateAndDisplayRoute(directionsService, directionsDisplay, location) {
+  var myLocation = new google.maps.LatLng(myLat,myLng);
+
+  directionsService.route({
+    origin: myLocation,
+    destination: {lat: -6.36191397, lng: 106.81653784},
+    // destination: {location},
+    travelMode: google.maps.TravelMode.DRIVING
+  }, function(response, status) {
+    if (status === google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+    } else {
+      window.alert('Directions request failed due to ' + status);
+    }
+  });
+  clearMarkers();
 }
