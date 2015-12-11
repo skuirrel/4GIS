@@ -9,8 +9,8 @@
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/materialize.min.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/flaticon.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/style.css')?>"  media="screen,projection"/>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
 
-    
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -76,8 +76,7 @@
     <script type="text/javascript" src="<?php echo base_url('assets/js/materialize.min.js')?>"></script>
     <script type="text/javascript" src="<?php echo base_url('assets/js/js.js')?>"></script>
     <!-- Import Google Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&libraries=places&callback=initialize" async defer></script>
-    
+      
 
     <script type="text/javascript">
         $(document).ready(function(){

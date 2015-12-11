@@ -5,10 +5,10 @@ var toDivApotek = document.getElementById("div-apotek");
 var toDivKlinik = document.getElementById("div-klinik");
 var btnMyLoc = document.getElementById("btn-myloc");
 var btnNearest = document.getElementById("btn-nearest");
+
 // var btnDirection = document.getElementById("btn-direction");
 var map;
 var markers = [];
-
 
 function initialize() {
     var mapCanvas = document.getElementById('map');
@@ -388,6 +388,7 @@ function getNearest(){
 
 function getDirection(latDest, lngDest) {
   var directionsService = new google.maps.DirectionsService;
+  
   // var directionsDisplay;
 
   if(directionsDisplay != null) {
@@ -399,6 +400,9 @@ function getDirection(latDest, lngDest) {
   directionsDisplay.setMap(map);
   
   calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
+
+
+
 }
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest) {
