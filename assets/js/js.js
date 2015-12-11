@@ -138,17 +138,24 @@ function createMarker(place) {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
 
       dataa = xhttp.responseText;
-      // dataaa = JSON.parse(response);
+      obj = JSON.parse(dataa);
 
-      
-      // document.getElementById("demo").innerHTML = dataa;
+      // $("#demo").html(obj);
+      console.log(obj);
 
-      if(dataa){
+      var arr =[];
+      for( var i in obj ) {
+          if (obj.hasOwnProperty(i)){
+             arr.push(obj[i]);
+          }
+      }
+
+      if(arr[0]){
         // document.getElementById("demo").innerHTML = dataa;
-        var marker = new google.maps.Marker({
+          var marker = new google.maps.Marker({
           map: map,
-          position: place.geometry.location,
-          // position: (dataa("lat"), dataa("lng")),
+          // position: place.geometry.location,
+          position: (arr[1], arr[2]),
           icon: image,
           animation: google.maps.Animation.DROP
         }); 
