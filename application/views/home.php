@@ -9,8 +9,8 @@
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/materialize.min.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/flaticon.css')?>"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="<?php echo base_url('assets/css/style.css')?>"  media="screen,projection"/>
-    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
 
+    
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -32,8 +32,11 @@
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
         </div>        
-        <div id="demo"><h2>TESS</h2></div>
+        <div id="demo"><h4>Jarak menuju lokasi</h4>
+            <div id="demo_2"></div>
+        </div>
         <button type="button" onclick="loadDoc()">Change Content</button>
+        <button type="button" onclick="fromDB()">Database</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>
@@ -76,10 +79,8 @@
     <script type="text/javascript" src="<?php echo base_url('assets/js/materialize.min.js')?>"></script>
     <script type="text/javascript" src="<?php echo base_url('assets/js/js.js')?>"></script>
     <!-- Import Google Maps -->
-
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&callback=initialize&libraries=places,geometry" async defer></script>
     
-
 
     <script type="text/javascript">
         $(document).ready(function(){
