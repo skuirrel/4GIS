@@ -76,7 +76,10 @@
     <script type="text/javascript" src="<?php echo base_url('assets/js/materialize.min.js')?>"></script>
     <script type="text/javascript" src="<?php echo base_url('assets/js/js.js')?>"></script>
     <!-- Import Google Maps -->
-      
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoXnZsPBu9G1NGa6gtykctR4oluV0E4E8&signed_in=true&callback=initialize&libraries=places,geometry" async defer></script>
+    
+
 
     <script type="text/javascript">
         $(document).ready(function(){

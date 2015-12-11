@@ -9,18 +9,40 @@
                        
         }
 
-         public function getLocation()
+         public function getLocation($id)
         {
             $this->load->model('sig_model');
-            // $isInList = $this->sig_model->isInList(1);
-            // if($isInList) {
-                $data['nama'] = $this->sig_model->getList(1);
-            // }
+            $isInList = $this->sig_model->isInList($id);
+            if($isInList) {
+                $data['nama'] = $this->sig_model->getList($id);
+            }
+            else{
+                $data['nama'] = null;
+            }
             // $this->load->view('home', $data);
             echo json_encode($data['nama']);
         }
 
+        // public function isInList($id)
+        // {
+        //     $this->load->model('sig_model');
+        //     $data['bs'] = $this->sig_model->isInList($id);
+        //     echo json_encode($data['bs']);
         // }
+
+        public function isInList($id)
+        {
+            $this->load->model('sig_model');
+            $ada = $this->sig_model->isInList($id);
+            $data['bs'] = $ada;
+            if($ada){
+                $data['lat'] = $this->sig_model->getLat($id);
+                $data['lng'] = $this->sig_model->getLong($id);
+            }
+
+            echo json_encode($data);
+        }
+
             
 
     } // end of Book

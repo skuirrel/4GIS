@@ -20,9 +20,9 @@
 	        }
 		}
 
-		function getList($id)
+		function getLat($id)
 		{
-			$this->db->select('nama');
+			$this->db->select("latitude");
 	        $this->db->from('list');
 	        $this->db->where('id',$id);    
 
@@ -30,12 +30,42 @@
 			
 			foreach ($result as $key => $value) 
 			{
-				$name=$value->nama;
+				$lat=$value->latitude;
 			}
-
-			return $name;
-
+			return $lat;
 		}
+
+		function getLong($id)
+		{
+			$this->db->select("longitude");
+	        $this->db->from('list');
+	        $this->db->where('id',$id);    
+
+			$result = $this->db->get()->result();
+			
+			foreach ($result as $key => $value) 
+			{
+				$long=$value->longitude;
+			}
+			return $long;
+		}
+
+		// function getList($id)
+		// {
+		// 	$this->db->select('nama');
+	 //        $this->db->from('list');
+	 //        $this->db->where('id',$id);    
+
+		// 	$result = $this->db->get()->result();
+			
+		// 	foreach ($result as $key => $value) 
+		// 	{
+		// 		$name=$value->nama;
+		// 	}
+
+		// 	return $name;
+
+		// }
 	} // end of Koleksi
 
 ?>
