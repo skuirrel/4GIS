@@ -149,13 +149,21 @@ function createMarker(place) {
              arr.push(obj[i]);
           }
       }
+      console.log(arr[0]);
+      // console.log(arr[1]);
+      // console.log(arr[2]);
+
+      var objLat = parseFloat(arr[1]);
+      var objLng = parseFloat(arr[2]);
+      objLatLng = new google.maps.LatLng(objLat, objLng);
+      console.log("latlng: "+objLatLng);
 
       if(arr[0]){
         // document.getElementById("demo").innerHTML = dataa;
           var marker = new google.maps.Marker({
           map: map,
           // position: place.geometry.location,
-          position: (arr[1], arr[2]),
+          position: objLatLng,
           icon: image,
           animation: google.maps.Animation.DROP
         }); 
