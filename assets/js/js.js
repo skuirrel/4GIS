@@ -10,6 +10,7 @@ var map;
 var markers = [];
 var nama = 'aa';
 var compareId = [];
+var idPlace = [];
 
 
 function initialize() {
@@ -24,9 +25,9 @@ function initialize() {
 
     var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
-    	location: depok,
-    	radius: 2000,
-    	name: "apotek",
+      location: depok,
+      radius: 2000,
+      name: "apotek",
       types: ["hospital", "pharmacy", "dentist", "doctor"]
     }, callback);
 
@@ -127,6 +128,7 @@ function createMarker(place) {
     infowindow.open(map, marker);
   });
   markers.push(marker);
+  idPlace.push(place.place_id);
 
   var service = new google.maps.places.PlacesService(map);
     service.getDetails({
@@ -352,12 +354,12 @@ function getLocation() {
 }
 
 function showPosition(position) {
-	var mapCanvas = document.getElementById('map');
+  var mapCanvas = document.getElementById('map');
 
-	window.myLat = position.coords.latitude;
-	window.myLng = position.coords.longitude;
-	
-	// var mapOptions = {
+  window.myLat = position.coords.latitude;
+  window.myLng = position.coords.longitude;
+  
+  // var mapOptions = {
  //      center: new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
  //      zoom: 15,
  //      mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -379,13 +381,13 @@ function showPosition(position) {
 }
 
 function getNearest(){
-	var myLocation = new google.maps.LatLng(myLat,myLng);
+  var myLocation = new google.maps.LatLng(myLat,myLng);
 
   toDivApotek.innerHTML="";
   toDivRS.innerHTML="";
   toDivKlinik.innerHTML="";
 
-	var service1 = new google.maps.places.PlacesService(map);
+  var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
       location: myLocation,
       radius: 2000,
@@ -495,12 +497,19 @@ function loadDB(){
 }
 
 function getIdx(id){
-  for(var i = 0; i < compareId.length; i++) {
-     if(compareId[i].id === id) {
+  for(var i = 0; i < placeId.length; i++) {
+     if(placeId[i] === id) {
+    // markers[i].setMap(null);
+        // console.log("compId: "+id);
        return i;
      }
-     else{
-      return -1;
+  }
+}
+
+function hideMarker(id){
+  for(var i = 0; i < idPlace.length; i++) {
+     if(idPlace[i] === id) {
+        markers[i].setMap(null); 
      }
   }
 }
@@ -534,30 +543,31 @@ function createMarkerDB(o){
 
 function yoman(){
   for(var i = 0; i < compareId.length; i++) {
-    // var idx = getIdx(compareId[i].id);
-    // markers[idx].setMap(null);
-    // markers[idx]=null;      
+    var idx = hideMarker(compareId[i].id);
+
     var objLatLng = compareId[i].position;
-    var marker = new google.maps.Marker({
+
+    var infowindow = new google.maps.InfoWindow({
+        content: compareId[i].name
+    });
+
+    var markernew = new google.maps.Marker({
       map: map,
       position: objLatLng,
       // icon: image,
       animation: google.maps.Animation.DROP
     }); 
 
-    var infowindow = new google.maps.InfoWindow({
-        content: compareId[i].name
+    markernew.addListener('click', function() {
+      infowindow.open(map, markernew);
     });
-
-    marker.addListener('click', function() {
-      infowindow.open(map, marker);
-    });
-    markers.push(marker);
+    markers.push(markernew);
 
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
       placeId: compareId[i].id
     }, callback2);
+    console.log("i: "+i);
   }
 
   
