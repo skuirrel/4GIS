@@ -84,6 +84,11 @@
           $('ul.tabs').tabs();
           $('input#input_text, textarea#textarea1').characterCounter();
           $('select').material_select();
+          
+        });
+
+        $(window).load(function () {
+          createMarkerDB();
         });
 
     </script>

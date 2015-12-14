@@ -103,10 +103,9 @@ function initialize() {
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
-
       createMarker(results[i]);
-      
     }
+    
   }
 }
 
@@ -514,34 +513,10 @@ function hideMarker(id){
   }
 }
 
-function createMarkerDB(o){
-  var objLat = parseFloat(o.latitude);
-  var objLng = parseFloat(o.longitude);
-  objLatLng = new google.maps.LatLng(objLat, objLng);
-
-  var marker = new google.maps.Marker({
-    map: map,
-    position: objLatLng,
-    // icon: image,
-    animation: google.maps.Animation.DROP
-  }); 
-
-  var infowindow = new google.maps.InfoWindow({
-      content: o.nama+"<br>"+o.latitude+", "+o.longitude
-  });
-
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
-  });
-  markers.push(marker);
-
-  var service = new google.maps.places.PlacesService(map);
-  service.getDetails({
-    placeId: o.id
-  }, callback2);
-}
-
-function yoman(){
+function createMarkerDB(){
+  console.log("CALLED");
+  var img = 'http://localhost/sig/assets/img/marker-v-places.png';
+  console.log("Len: "+compareId.length);
   for(var i = 0; i < compareId.length; i++) {
     var idx = hideMarker(compareId[i].id);
 
@@ -554,7 +529,7 @@ function yoman(){
     var markernew = new google.maps.Marker({
       map: map,
       position: objLatLng,
-      // icon: image,
+      icon: img,
       animation: google.maps.Animation.DROP
     }); 
 
