@@ -33,7 +33,6 @@
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
         </div>        
         <div id="demo">TESS</div>
-        <button type="button" onclick="yoman()">From DB</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>
@@ -59,6 +58,8 @@
           <div id="div-rs" >
           </div>
           <div id="div-klinik">
+          </div>
+          <div id="div-lain">
           </div>
         </div>
         
@@ -86,6 +87,8 @@
           $('select').material_select();
           
         });
+
+        // $.when(initialize()).then(createMarkerDB());
 
         $(window).load(function () {
           createMarkerDB();

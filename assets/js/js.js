@@ -3,6 +3,7 @@ var toDivAll = document.getElementById("div-all");
 var toDivRS = document.getElementById("div-rs");
 var toDivApotek = document.getElementById("div-apotek");
 var toDivKlinik = document.getElementById("div-klinik");
+var toDivLain = document.getElementById("div-lain");
 var btnMyLoc = document.getElementById("btn-myloc");
 var btnNearest = document.getElementById("btn-nearest");
 // var btnDirection = document.getElementById("btn-direction");
@@ -68,14 +69,14 @@ function initialize() {
       }
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
-
+      var image = 'http://localhost/sig/assets/img/marker-places.png';
       places.forEach(function(place) {
         var infowindow = new google.maps.InfoWindow({
-          content: place.name + '<br>' + place.place_id
+          content: place.name
         });
         var marker = new google.maps.Marker({
           map: map,
-          // icon: icon,
+          icon: image,
           title: place.name,
           position: place.geometry.location,
           animation: google.maps.Animation.DROP
@@ -105,7 +106,6 @@ function callback(results, status) {
     for (var i = 0; i < results.length; i++) {
       createMarker(results[i]);
     }
-    
   }
 }
 
@@ -152,8 +152,11 @@ function createMarker(place) {
 }
 
 function callback2(details, status){
+  console.log("brpsi");
 
   if (status == google.maps.places.PlacesServiceStatus.OK) {
+    console.log("OK");
+
     if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
       showToDivRS(details);
     }
@@ -163,10 +166,21 @@ function callback2(details, status){
     else if((details.name.toLowerCase().indexOf("klinik") > -1) || (details.name.toLowerCase().indexOf("dokter") > -1)){
       showToDivKlinik(details);
     }
-    else{
-
-    }
-      
+  }
+  else if (status == google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+    console.log("OVER");
+    setTimeout(function() {
+        // if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
+        //   showToDivRS(details);
+        // }
+        // else if((details.name.toLowerCase().indexOf("apotek") > -1) || (details.name.toLowerCase().indexOf("apotik") > -1)){
+        //   showToDivApotek(details);
+        // }
+        // else if((details.name.toLowerCase().indexOf("klinik") > -1) || (details.name.toLowerCase().indexOf("dokter") > -1)){
+        //   showToDivKlinik(details);
+        // }
+        console.log("OK 2");
+    }, 1000);
   }
 }
 
@@ -199,7 +213,7 @@ function showToDivRS(details){
         '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -312,6 +326,48 @@ function showToDivKlinik(details){
       '</div>';
 }
 
+function showToDivLain(details){
+  var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
+  var str = details.name.replace(/\s+/g, '');
+  toDivLain.innerHTML += 
+    '<div class="card col s12" id="'+str+'">'+
+        '<h5>'+details.name+'</h5>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_address+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_phone_number+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+        '</div>'+
+      '</div>';
+}
+
 // function getMeta(url){   
 //     var img = new Image();
 //     img.onload = function(){
@@ -365,16 +421,22 @@ function showPosition(position) {
  //    }
 
   // map = new google.maps.Map(mapCanvas, mapOptions);
+  
+
   var image = 'http://localhost/sig/assets/img/marker-home.png';
   var marker = new google.maps.Marker({
     map: map,
     icon: image,
     position: new google.maps.LatLng(position.coords.latitude,position.coords.longitude)
   });
+  var bounds = new google.maps.LatLngBounds();
+  bounds.extend(marker.position);
+  map.fitBounds(bounds);
 
   // marker.setMap(map);
   markers.push(marker);
   marker.setAnimation(google.maps.Animation.BOUNCE);
+  // map.panTo(marker.position);
   btnNearest.disabled = false;
   $('.btn-direction').prop('disabled', false);
 }
@@ -410,16 +472,11 @@ function getNearest(){
       types: ["hospital", "pharmacy", "dentist", "doctor"]
     }, callback);
 }
-
+// 
 function getDirection(latDest, lngDest) {
   var directionsService = new google.maps.DirectionsService;
-  // var directionsDisplay;
-
-  if(directionsDisplay != null) {
-      directionsDisplay.setMap(null);
-      var directionsDisplay = null;
-  }
   var directionsDisplay = new google.maps.DirectionsRenderer;
+  // directionsDisplay.setDirections({routes: []});
 
   directionsDisplay.setMap(map);
   
@@ -446,70 +503,18 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
   $("#demo").append(str + " km") ;
-}
 
-function loadDoc() {
-  var place_id = 'ChIJgZi6JTnsaS4R0a7kLTngTA8';
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-      // var response = xmlhttp.responseText;
-      // var data = JSON.parse(response);
-      // document.getElementById("demo").innerHTML = data;
-      document.getElementById("demo").innerHTML = xhttp.responseText;
-    }
-  };
-  xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation/"+place_id, true);
-  xhttp.send();
-}
+  var legs = directionsDisplay;
+  console.log(legs.toSource()+"");
+  // $("#demo").append(" "+legs + " km") ;
 
-function loadDB(){   
-  // var image = 'http://localhost/sig/assets/img/marker-places.png';
-  // clearMarkers();
-  jQuery.ajax({
-    type: "POST",
-    url: "http://localhost/sig/index.php/Sig/showAll/",
-    success: function(res){
-      if (res){
-        var obj = jQuery.parseJSON(res);
-        var resultQuery = "";
-        for (var i=0 ; i<obj.query.length; i++){
-          var idx = compare(obj.query[i].id);
-          if(idx>-1){
-            createMarkerDB(obj.query[i]);
-            // markers[idx].setMap(null);
-            // markers[idx]=null;
-            console.log("MASUK IF: "+idx);
-          }
-          else{
-            console.log("ENGGAK: "+idx);
-          }
-
-          // console.log("Nama: "+obj.query[i].nama);
-          // console.log("Lat: "+obj.query[i].latitude);
-          // console.log("Lng: "+obj.query[i].longitude);
-        }
-        $("#demo").html(resultQuery);
-      }
-    }
-      });
-}
-
-function getIdx(id){
-  for(var i = 0; i < placeId.length; i++) {
-     if(placeId[i] === id) {
-    // markers[i].setMap(null);
-        // console.log("compId: "+id);
-       return i;
-     }
-  }
 }
 
 function hideMarker(id){
   for(var i = 0; i < idPlace.length; i++) {
-     if(idPlace[i] === id) {
-        markers[i].setMap(null); 
-     }
+    if(idPlace[i] === id) {
+      markers[i].setMap(null); 
+    }
   }
 }
 
@@ -518,7 +523,7 @@ function createMarkerDB(){
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   console.log("Len: "+compareId.length);
   for(var i = 0; i < compareId.length; i++) {
-    var idx = hideMarker(compareId[i].id);
+    hideMarker(compareId[i].id);
 
     var objLatLng = compareId[i].position;
 
@@ -544,7 +549,22 @@ function createMarkerDB(){
     }, callback2);
     console.log("i: "+i);
   }
-
-  
 }
+
+// function saveToDB(place){
+//   jQuery.ajax({
+//     type: "POST",
+//     url: "http://localhost/sig/index.php/Sig/saveData/",
+//     data: {
+//       id: place.place_id,
+//       name: place.name,
+//       photos: place.photos[0].getUrl({'maxWidth':400, 'maxHeight':400}),
+//       address: place.formatted_address,
+//       telp: place.formatted_phone_number,
+//       opening_hours: place.opening_hours
+//     }
+//   }).done(function(){
+//     alert("SAVED");
+//   })
+// }
 
