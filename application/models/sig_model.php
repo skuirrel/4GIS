@@ -66,6 +66,13 @@
 		// 	return $name;
 
 		// }
+
+		function getAll(){
+			$this->db->select('*');
+			$this->db->from('list');
+			$query = $this->db->get();
+			return $query->result();
+		}
 	} // end of Koleksi
 
 ?>

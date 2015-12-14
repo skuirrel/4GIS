@@ -9,6 +9,7 @@ var btnNearest = document.getElementById("btn-nearest");
 var map;
 var markers = [];
 var nama = 'aa';
+var compareId = [];
 
 
 function initialize() {
@@ -20,8 +21,6 @@ function initialize() {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(mapCanvas, mapOptions);
-
-
 
     var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
@@ -51,7 +50,6 @@ function initialize() {
     // Create the search box and link it to the UI element.
     var input = document.getElementById('all-search');
     var searchBox = new google.maps.places.SearchBox(input);
-    // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', function() {
@@ -67,13 +65,6 @@ function initialize() {
       if (places.length == 0) {
         return;
       }
-
-      // Clear out the old markers.
-      // markers.forEach(function(marker) {
-      //   marker.setMap(null);
-      // });
-      // markers = [];
-
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
 
@@ -126,83 +117,37 @@ function createMarker(place) {
       content: place.name
   });
 
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-      dataa = xhttp.responseText;
-      obj = JSON.parse(dataa);
-
-      // $("#demo").html(obj);
-      console.log(obj);
-
-      var arr =[];
-      for( var i in obj ) {
-          if (obj.hasOwnProperty(i)){
-             arr.push(obj[i]);
-          }
-      }
-      console.log(arr[0]);
-      // console.log(arr[1]);
-      // console.log(arr[2]);
-
-      var objLat = parseFloat(arr[1]);
-      var objLng = parseFloat(arr[2]);
-      objLatLng = new google.maps.LatLng(objLat, objLng);
-      console.log("latlng: "+objLatLng);
-
-      if(arr[0]){
-        // document.getElementById("demo").innerHTML = dataa;
-          var marker = new google.maps.Marker({
-          map: map,
-          // position: place.geometry.location,
-          position: objLatLng,
-          icon: image,
-          animation: google.maps.Animation.DROP
-        }); 
-      }
-
-      marker.addListener('click', function() {
-        infowindow.open(map, marker);
-      });
-
-      var service = new google.maps.places.PlacesService(map);
-        service.getDetails({
-          placeId: place.place_id
-        }, callback2);
-    }
-  };
-  xhttp.open("POST", "http://localhost/sig/index.php/sig/isInList/"+place.place_id, true);
-  xhttp.send();
-
-
-  // var marker = new google.maps.Marker({
-  //   map: map,
-  //   position: place.geometry.location,
-  //   icon: image,
-  //   animation: google.maps.Animation.DROP
-  // });
-  // marker.addListener('click', function() {
-  //   infowindow.open(map, marker);
-  // });
-  // markers.push(marker);
-  // marker.addListener('click', function() {
-  //   infowindow.open(map, marker);
-  // });
-
-  // var service = new google.maps.places.PlacesService(map);
-  //   service.getDetails({
-  //     placeId: place.place_id
-  //   }, callback2);
-
-}
-
-function clearMarkers() {
-  // setMapOnAll(null);
-  markers.forEach(function(marker) {
-    marker.setMap(null);
+  var marker = new google.maps.Marker({
+    map: map,
+    position: place.geometry.location,
+    icon: image,
+    animation: google.maps.Animation.DROP
   });
-  markers = [];
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
+  });
+  markers.push(marker);
+
+  var service = new google.maps.places.PlacesService(map);
+    service.getDetails({
+      placeId: place.place_id
+    }, callback2);
+
+    // function checkPlace(place){   
+      jQuery.ajax({
+        type: "POST",
+        url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
+        success: function(res){
+          if (res){
+            var obj = jQuery.parseJSON(res);
+            if(obj.bs){
+              console.log('IYA ADA BRO');
+              compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
+            }
+          }
+        }
+      });
+    // }
 }
 
 function callback2(details, status){
@@ -224,9 +169,14 @@ function callback2(details, status){
   }
 }
 
+function clearMarkers() {
+  markers.forEach(function(marker) {
+    marker.setMap(null);
+  });
+  markers = [];
+}
 
 function showToDivRS(details){
-  // toDivRS.empty();
   var url;
   if(typeof details.photos !== 'undefined' || !details.photos){
     url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
@@ -277,7 +227,6 @@ function showToDivRS(details){
 }
 
 function showToDivApotek(details){
-  // toDivApotek.empty();
  var url;
   if(typeof details.photos !== 'undefined'  || !details.photos){
     url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
@@ -321,7 +270,6 @@ function showToDivApotek(details){
 }
 
 function showToDivKlinik(details){
-  // toDivKlinik.empty();
   var url;
   if(typeof details.photos !== 'undefined'  || !details.photos){
     url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
@@ -498,6 +446,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
 
   $("#demo").append(str + " km") ;
 }
+
 function loadDoc() {
   var place_id = 'ChIJgZi6JTnsaS4R0a7kLTngTA8';
   var xhttp = new XMLHttpRequest();
@@ -512,3 +461,105 @@ function loadDoc() {
   xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation/"+place_id, true);
   xhttp.send();
 }
+
+function loadDB(){   
+  // var image = 'http://localhost/sig/assets/img/marker-places.png';
+  // clearMarkers();
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost/sig/index.php/Sig/showAll/",
+    success: function(res){
+      if (res){
+        var obj = jQuery.parseJSON(res);
+        var resultQuery = "";
+        for (var i=0 ; i<obj.query.length; i++){
+          var idx = compare(obj.query[i].id);
+          if(idx>-1){
+            createMarkerDB(obj.query[i]);
+            // markers[idx].setMap(null);
+            // markers[idx]=null;
+            console.log("MASUK IF: "+idx);
+          }
+          else{
+            console.log("ENGGAK: "+idx);
+          }
+
+          // console.log("Nama: "+obj.query[i].nama);
+          // console.log("Lat: "+obj.query[i].latitude);
+          // console.log("Lng: "+obj.query[i].longitude);
+        }
+        $("#demo").html(resultQuery);
+      }
+    }
+      });
+}
+
+function getIdx(id){
+  for(var i = 0; i < compareId.length; i++) {
+     if(compareId[i].id === id) {
+       return i;
+     }
+     else{
+      return -1;
+     }
+  }
+}
+
+function createMarkerDB(o){
+  var objLat = parseFloat(o.latitude);
+  var objLng = parseFloat(o.longitude);
+  objLatLng = new google.maps.LatLng(objLat, objLng);
+
+  var marker = new google.maps.Marker({
+    map: map,
+    position: objLatLng,
+    // icon: image,
+    animation: google.maps.Animation.DROP
+  }); 
+
+  var infowindow = new google.maps.InfoWindow({
+      content: o.nama+"<br>"+o.latitude+", "+o.longitude
+  });
+
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
+  });
+  markers.push(marker);
+
+  var service = new google.maps.places.PlacesService(map);
+  service.getDetails({
+    placeId: o.id
+  }, callback2);
+}
+
+function yoman(){
+  for(var i = 0; i < compareId.length; i++) {
+    // var idx = getIdx(compareId[i].id);
+    // markers[idx].setMap(null);
+    // markers[idx]=null;      
+    var objLatLng = compareId[i].position;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: objLatLng,
+      // icon: image,
+      animation: google.maps.Animation.DROP
+    }); 
+
+    var infowindow = new google.maps.InfoWindow({
+        content: compareId[i].name
+    });
+
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+    markers.push(marker);
+
+    var service = new google.maps.places.PlacesService(map);
+    service.getDetails({
+      placeId: compareId[i].id
+    }, callback2);
+  }
+
+  
+}
+

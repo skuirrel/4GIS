@@ -43,6 +43,12 @@
             echo json_encode($data);
         }
 
+        public function showAll(){
+            $this->load->model('sig_model');
+            $data['query'] = $this->sig_model->getAll();
+            echo json_encode($data);
+        }
+
             
 
     } // end of Book
