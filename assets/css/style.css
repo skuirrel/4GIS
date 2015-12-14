@@ -62,6 +62,42 @@ input.form-search{
   padding: 0px 1rem;
 }
 
+.photo-h, .photo-v, .photo { 
+  position: relative;
+  width: 360px;
+  height: 200px;
+  overflow: hidden;
+  float: left;
+
+}
+.photo-h, .photo img { 
+  opacity: 1;
+  filter: alpha(opacity=100);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+  margin: 0px !important;
+}
+.photo-v img { 
+  opacity: 1;
+  filter: alpha(opacity=100);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+  margin: 0px !important;
+}
+
+
 @font-face{
   font-family: "Bariol";
   src: url('../font/Bariol_Regular.otf');

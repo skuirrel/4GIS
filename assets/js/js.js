@@ -78,13 +78,6 @@ function initialize() {
       var bounds = new google.maps.LatLngBounds();
 
       places.forEach(function(place) {
-        // var icon = {
-        //   url: place.icon,
-        //   size: new google.maps.Size(71, 71),
-        //   origin: new google.maps.Point(0, 0),
-        //   anchor: new google.maps.Point(17, 34),
-        //   scaledSize: new google.maps.Size(25, 25)
-        // };
         var infowindow = new google.maps.InfoWindow({
           content: place.name + '<br>' + place.place_id
         });
@@ -182,14 +175,25 @@ function createMarker(place) {
   xhttp.open("POST", "http://localhost/sig/index.php/sig/isInList/"+place.place_id, true);
   xhttp.send();
 
+
   // var marker = new google.maps.Marker({
   //   map: map,
   //   position: place.geometry.location,
   //   icon: image,
   //   animation: google.maps.Animation.DROP
   // });
+  // marker.addListener('click', function() {
+  //   infowindow.open(map, marker);
+  // });
+  // markers.push(marker);
+  // marker.addListener('click', function() {
+  //   infowindow.open(map, marker);
+  // });
 
-  markers.push(marker);
+  // var service = new google.maps.places.PlacesService(map);
+  //   service.getDetails({
+  //     placeId: place.place_id
+  //   }, callback2);
 
 }
 
@@ -232,11 +236,18 @@ function showToDivRS(details){
   }
   
   var str = details.name.replace(/\s+/g, '');
+  // getMeta(url);
+  // if (checkW>=checkH){
+  //   var classphoto = 'photo-h';
+  // }else{
+  //   var classphoto = 'photo-v';
+  // }
+
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
-        '<img class="responsive-img" src="'+url+'"/>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -269,7 +280,7 @@ function showToDivApotek(details){
   // toDivApotek.empty();
  var url;
   if(typeof details.photos !== 'undefined'  || !details.photos){
-    url = details.photos[1].getUrl({'maxWidth':400, 'maxHeight':400});
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
   }
   else{
     url = '';
@@ -280,7 +291,7 @@ function showToDivApotek(details){
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         // '<h5> id:'+details.id+'</h5>'+
-        '<img class="responsive-img" src="'+url+'"/>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -323,7 +334,7 @@ function showToDivKlinik(details){
   toDivKlinik.innerHTML += 
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<img class="responsive-img" src="'+url+'"/>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -352,7 +363,14 @@ function showToDivKlinik(details){
       '</div>';
 }
 
-
+// function getMeta(url){   
+//     var img = new Image();
+//     img.onload = function(){
+//       window.checkW = this.width;
+//       window.checkH = this.height;
+//     };
+//     img.src = url;
+// }
 
 function showDiv(e){
   if(e.value == 0){
