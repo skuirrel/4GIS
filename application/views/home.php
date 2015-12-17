@@ -26,7 +26,7 @@
             <img class="responsive-img" src="<?php echo base_url('assets/img/logocs.png')?>"/>
           </div>
           <button onclick="getLocation()" class="btn" id="btn-myloc"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
-          <button onclick="getNearest()" class="btn" id="btn-nearest" disabled><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
+          <button onclick="getNearest()" class="btn" id="btn-nearest"><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
         </div>
         <div class="col s10 offset-s1">
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
