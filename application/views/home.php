@@ -91,7 +91,7 @@
         // $.when(initialize()).then(createMarkerDB());
 
         $(window).load(function () {
-          createMarkerDB();
+          callbacknew();
         });
 
     </script>

@@ -12,9 +12,16 @@ var markers = [];
 var nama = 'aa';
 var compareId = [];
 var idPlace = [];
+var directionsService;
+var directionsDisplay;
+var directionOn = false;
 
 
 function initialize() {
+
+    directionsService = new google.maps.DirectionsService;
+    directionsDisplay = new google.maps.DirectionsRenderer;
+
     var mapCanvas = document.getElementById('map');
     var depok = new google.maps.LatLng(-6.3680686,106.82737)
     var mapOptions = {
@@ -23,6 +30,10 @@ function initialize() {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(mapCanvas, mapOptions);
+
+    directionsDisplay.setMap(map);
+
+    // directionsDisplay.removeDirection(,);
 
     var service1 = new google.maps.places.PlacesService(map);
     service1.nearbySearch({
@@ -142,7 +153,7 @@ function createMarker(place) {
           if (res){
             var obj = jQuery.parseJSON(res);
             if(obj.bs){
-              console.log('IYA ADA BRO');
+              console.log('IYA ADA BRO'+place.place_id);
               compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
             }
           }
@@ -401,6 +412,12 @@ function showDiv(e){
 }
 
 function getLocation() {
+
+    if(directionOn){
+      directionsDisplay.setMap(null);
+    }
+    
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } else { 
@@ -411,8 +428,11 @@ function getLocation() {
 function showPosition(position) {
   var mapCanvas = document.getElementById('map');
 
-  window.myLat = position.coords.latitude;
-  window.myLng = position.coords.longitude;
+
+  // window.myLat = position.coords.latitude;
+  // window.myLng = position.coords.longitude;
+  window.myLat = -6.368058;
+  window.myLng = 106.817440;
   
   // var mapOptions = {
  //      center: new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
@@ -427,7 +447,8 @@ function showPosition(position) {
   var marker = new google.maps.Marker({
     map: map,
     icon: image,
-    position: new google.maps.LatLng(position.coords.latitude,position.coords.longitude)
+    position: new google.maps.LatLng(window.myLat,window.myLng)
+    // position: new google.maps.LatLng(-6.368058,106.817440)
   });
   var bounds = new google.maps.LatLngBounds();
   bounds.extend(marker.position);
@@ -442,6 +463,10 @@ function showPosition(position) {
 }
 
 function getNearest(){
+
+  if(directionOn){
+    directionsDisplay.setMap(null);
+  }
   var myLocation = new google.maps.LatLng(myLat,myLng);
 
   toDivApotek.innerHTML="";
@@ -474,17 +499,30 @@ function getNearest(){
 }
 // 
 function getDirection(latDest, lngDest) {
-  var directionsService = new google.maps.DirectionsService;
-  var directionsDisplay = new google.maps.DirectionsRenderer;
-  // directionsDisplay.setDirections({routes: []});
+  // var directionsService = new google.maps.DirectionsService;
+  // var directionsDisplay = new google.maps.DirectionsRenderer;
+  // // directionsDisplay.setDirections({routes: []});
 
-  directionsDisplay.setMap(map);
+  // directionsDisplay.setMap(map);
   
   calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
 }
 
+function removeDirection(directionsDisplay) {
+
+  // directionsDisplay.setDirections({routes: []});
+
+  directionsDisplay.setMap(null);
+  directionsDisplay.set('direction', null);
+  
+}
+
+
+
 function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest) {
-  var myLocation = new google.maps.LatLng(myLat,myLng);
+  console.log("Loc: "+window.myLat+', '+window.myLng);
+  console.log("Dest: "+latDest+', '+lngDest);
+  var myLocation = new google.maps.LatLng(window.myLat,window.myLng);
   var myDestination = new google.maps.LatLng(latDest,lngDest);
 
   directionsService.route({
@@ -504,8 +542,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
 
   $("#demo").append(str + " km") ;
 
-  var legs = directionsDisplay;
-  console.log(legs.toSource()+"");
+  directionOn = true;
+
+  // var legs = directionsDisplay;
+  // console.log(legs.toSource()+"");
   // $("#demo").append(" "+legs + " km") ;
 
 }
@@ -518,17 +558,26 @@ function hideMarker(id){
   }
 }
 
-function createMarkerDB(){
+function callbacknew() {
   console.log("CALLED");
-  var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   console.log("Len: "+compareId.length);
   for(var i = 0; i < compareId.length; i++) {
-    hideMarker(compareId[i].id);
+    createMarkerDB(compareId[i]);
+  }
+  
+}
 
-    var objLatLng = compareId[i].position;
+function createMarkerDB(compareId){
+  
+  var img = 'http://localhost/sig/assets/img/marker-v-places.png';
+  
+
+    hideMarker(compareId.id);
+
+    var objLatLng = compareId.position;
 
     var infowindow = new google.maps.InfoWindow({
-        content: compareId[i].name
+        content: compareId.name
     });
 
     var markernew = new google.maps.Marker({
@@ -545,10 +594,10 @@ function createMarkerDB(){
 
     var service = new google.maps.places.PlacesService(map);
     service.getDetails({
-      placeId: compareId[i].id
+      placeId: compareId.id
     }, callback2);
-    console.log("i: "+i);
-  }
+    // console.log("i: "+i);
+  
 }
 
 // function saveToDB(place){
