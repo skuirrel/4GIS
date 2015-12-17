@@ -32,11 +32,8 @@
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
         </div>        
-        <div id="demo"><h4>Jarak menuju lokasi</h4>
-            <div id="demo_2"></div>
-        </div>
+        <div id="demo"><h2>TESS</h2></div>
         <button type="button" onclick="loadDoc()">Change Content</button>
-        <button type="button" onclick="fromDB()">Database</button>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>

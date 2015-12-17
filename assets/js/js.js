@@ -8,6 +8,7 @@ var btnNearest = document.getElementById("btn-nearest");
 // var btnDirection = document.getElementById("btn-direction");
 var map;
 var markers = [];
+var nama = 'aa';
 
 
 function initialize() {
@@ -49,7 +50,6 @@ function initialize() {
 
     // Create the search box and link it to the UI element.
     var input = document.getElementById('all-search');
-    
     var searchBox = new google.maps.places.SearchBox(input);
     // map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
@@ -76,8 +76,6 @@ function initialize() {
 
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
-
-      
 
       places.forEach(function(place) {
         // var icon = {
@@ -120,7 +118,9 @@ function initialize() {
 function callback(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
+
       createMarker(results[i]);
+      
     }
   }
 }
@@ -130,34 +130,51 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
 
   var infowindow = new google.maps.InfoWindow({
-      content: place.name + '<br>' + place.place_id
+      content: place.name
   });
 
-  var marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location,
-    icon: image,
-    animation: google.maps.Animation.DROP
-  });
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState == 4 && xhttp.status == 200) {
 
+      dataa = xhttp.responseText;
+      // dataaa = JSON.parse(response);
 
+      
+      // document.getElementById("demo").innerHTML = dataa;
 
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
-    // var str = '#' + place.name.replace(/\s+/g, '');
-    // $('html, body').animate({
-    //     scrollTop: $(str).offset().top
-    // }, 2000);
-  });
+      if(dataa){
+        // document.getElementById("demo").innerHTML = dataa;
+        var marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location,
+          // position: (dataa("lat"), dataa("lng")),
+          icon: image,
+          animation: google.maps.Animation.DROP
+        }); 
+      }
+
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+
+      var service = new google.maps.places.PlacesService(map);
+        service.getDetails({
+          placeId: place.place_id
+        }, callback2);
+    }
+  };
+  xhttp.open("POST", "http://localhost/sig/index.php/sig/isInList/"+place.place_id, true);
+  xhttp.send();
+
+  // var marker = new google.maps.Marker({
+  //   map: map,
+  //   position: place.geometry.location,
+  //   icon: image,
+  //   animation: google.maps.Animation.DROP
+  // });
 
   markers.push(marker);
-
-  var service = new google.maps.places.PlacesService(map);
-  service.getDetails({
-    placeId: place.place_id
-  }, callback2);
-
-
 
 }
 
@@ -170,16 +187,6 @@ function clearMarkers() {
 }
 
 function callback2(details, status){
-
-
-  // var xhttp = new XMLHttpRequest();
-  // xhttp.onreadystatechange = function() {
-  //   if (xhttp.readyState == 4 && xhttp.status == 200) {
-  //     document.getElementById("demo").innerHTML = xhttp.responseText;
-  //   }
-  // };
-  // xhttp.open("GET", "http://localhost/sig/index.php/sig/getLocation", true);
-  // xhttp.send();
 
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     if((details.name.toLowerCase().indexOf("rumah sakit") > -1) || (details.name.indexOf("RS") > -1)){
@@ -201,12 +208,20 @@ function callback2(details, status){
 
 function showToDivRS(details){
   // toDivRS.empty();
+  var url;
+  if(typeof details.photos !== 'undefined' || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+  
   var str = details.name.replace(/\s+/g, '');
   toDivRS.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
-        // '<h5>'+details.name+'</h5>'+
+        '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -237,12 +252,20 @@ function showToDivRS(details){
 
 function showToDivApotek(details){
   // toDivApotek.empty();
+ var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[1].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivApotek.innerHTML += 
     '<div class="card col s12 id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
         // '<h5> id:'+details.id+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -273,11 +296,19 @@ function showToDivApotek(details){
 
 function showToDivKlinik(details){
   // toDivKlinik.empty();
+  var url;
+  if(typeof details.photos !== 'undefined'  || !details.photos){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = '';
+  }
+
   var str = details.name.replace(/\s+/g, '');
   toDivKlinik.innerHTML += 
     '<div class="card col s12" id="'+str+'">'+
         '<h5>'+details.name+'</h5>'+
-        '<img class="responsive-img" src="'+details.icon+'"/>'+
+        '<img class="responsive-img" src="'+url+'"/>'+
         '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
@@ -305,6 +336,7 @@ function showToDivKlinik(details){
         '</div>'+
       '</div>';
 }
+
 
 
 function showDiv(e){
@@ -350,7 +382,7 @@ function showPosition(position) {
  //      mapTypeId: google.maps.MapTypeId.ROADMAP
  //    }
 
- //  map = new google.maps.Map(mapCanvas, mapOptions);
+  // map = new google.maps.Map(mapCanvas, mapOptions);
   var image = 'http://localhost/sig/assets/img/marker-home.png';
   var marker = new google.maps.Marker({
     map: map,
@@ -431,11 +463,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   clearMarkers();
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
-  $("#demo_2").html(str + " km") ;
+  $("#demo").append(str + " km") ;
 }
-
 function loadDoc() {
-  // var place_id = e763722d7423fe24040d41beba0df2a475700d81;
+  var place_id = 'ChIJgZi6JTnsaS4R0a7kLTngTA8';
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -445,7 +476,6 @@ function loadDoc() {
       document.getElementById("demo").innerHTML = xhttp.responseText;
     }
   };
-  xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation", true);
+  xhttp.open("POST", "http://localhost/sig/index.php/sig/getLocation/"+place_id, true);
   xhttp.send();
 }
-
