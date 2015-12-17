@@ -44,7 +44,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "apotek",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["pharmacy"]
   }, callback);
 
   var service2 = new google.maps.places.PlacesService(map);
@@ -52,7 +52,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "rumah sakit",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["hospital"]
   }, callback);
 
   var service3 = new google.maps.places.PlacesService(map);
@@ -60,7 +60,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "klinik",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["doctor"]
   }, callback);
     
   jQuery.ajax({
@@ -114,7 +114,8 @@ function initialize() {
         icon: image,
         title: place.name,
         position: place.geometry.location,
-        animation: google.maps.Animation.DROP
+        animation: google.maps.Animation.DROP,
+        type: type
       })
 
       // Create a marker for each place.
@@ -133,6 +134,13 @@ function initialize() {
     map.fitBounds(bounds);
   });
 
+}
+
+function getLocation() {
+  var pos = new google.maps.LatLng(myLat,myLng);
+  // google.maps.event.addListener(marker, 'click', function() {
+   map.panTo(pos);
+  // });  
 }
 
 function showPosition(position) {
@@ -185,6 +193,10 @@ function createMarker(place) {
     icon: image,
     animation: google.maps.Animation.DROP
   });
+
+
+  marker.category = "pharmacy";
+
   marker.addListener('click', function() {
     if (infowindow) {
         infowindow.close();
@@ -200,21 +212,21 @@ function createMarker(place) {
   
     
 
-  //CHECK IN DB
-  // jQuery.ajax({
-  //   type: "POST",
-  //   url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
-  //   success: function(res){
-  //     if (res){
-  //       var obj = jQuery.parseJSON(res);
-  //       if(obj.bs){
-  //         console.log('IYA ADA BRO');
-  //         compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-  //         // console.log("COMPARE");
-  //       }
-  //     }
-  //   }
-  // });
+  // CHECK IN DB
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
+    success: function(res){
+      if (res){
+        var obj = jQuery.parseJSON(res);
+        if(obj.bs){
+          console.log('IYA ADA BRO');
+          compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
+          // console.log("COMPARE");
+        }
+      }
+    }
+  });
 }
 
 function showToDiv(details, status){
@@ -286,7 +298,7 @@ function createMarkerDB(res){
     infowindow.open(map, marker);
   });
   markers.push(marker);
-
+  
     // var service = new google.maps.places.PlacesService(map);
     // service.getDetails({
     //   placeId: compareId[i].id
@@ -308,13 +320,13 @@ function setNearestDB(myPos, latLngDB, name){
   console.log('Distance of '+latLngDB+ 'and original position' + myPos+ 'Is equal to '+distance);
   // updateResults();
   if (distance < setDistance) {
-    addMarker(latLngDB, name);
+    addMarkerDB(latLngDB, name);
     // stopsfound++;
     // updateResults();
   }
 }
 
-function addMarker(position, name) {
+function addMarkerDB(position, name) {
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   console.log('Adding Marker ' + name);
   var marker = new google.maps.Marker({
@@ -335,13 +347,6 @@ function hideMarker(id){
   }
 }
 
-function getLocation() {
-  var pos = new google.maps.LatLng(myLat,myLng);
-  // google.maps.event.addListener(marker, 'click', function() {
-   map.panTo(pos);
-  // });  
-}
-
 function getNearest(){
   var myLocation = new google.maps.LatLng(myLat,myLng);
 
@@ -359,7 +364,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "apotek",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["pharmacy"]
     }, callback);
 
     var service2 = new google.maps.places.PlacesService(map);
@@ -367,7 +372,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "rumah sakit",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["hospital"]
     }, callback);
 
     var service3 = new google.maps.places.PlacesService(map);
@@ -375,7 +380,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "klinik",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["doctor"]
     }, callback);
 
     console.log("Len DB: "+database.length);
@@ -422,9 +427,35 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
 
 }
 
+showDiv = function showType(category) {
+    for (i = 0; i < marker.length; i++) {
+        marker = markers[i];
+        // If is same category or category not picked
+        if (marker.category == category || category.length === 0) {
+            marker.setVisible(true);
+        }
+        // Categories don't match 
+        else {
+            marker.setVisible(false);
+        }
+    }
+
+       
+}
+
 function clearMarkers() {
   markers.forEach(function(marker) {
     marker.setMap(null);
   });
   markers = [];
+}
+
+function hideMarker(id){
+  for(var i = 0; i < idPlace.length; i++) {
+    if(idPlace[i] === id) {
+      console.log("YEY");
+      console.log(idPlace[i]);
+      markers[i].setMap(null); 
+    }
+  }
 }
