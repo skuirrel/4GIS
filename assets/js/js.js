@@ -18,7 +18,7 @@ var directionsDisplay;
 var directionOn = false;
 var database = [];
 var distanceCompare = [];
-var infowindow = null;
+var infowindow;
 
 
 function initialize() {
@@ -112,8 +112,7 @@ function initialize() {
         icon: image,
         title: place.name,
         position: place.geometry.location,
-        animation: google.maps.Animation.DROP,
-        type: type
+        animation: google.maps.Animation.DROP
       })
 
       // Create a marker for each place.
@@ -191,6 +190,9 @@ function createMarker(place) {
   });
 
   marker.addListener('click', function() {
+    if(infowindow) {
+      infowindow.close();
+    }
     infowindow = new google.maps.InfoWindow({
       content: place.name
     });
@@ -223,16 +225,27 @@ function createMarker(place) {
 function showToDiv(details, status){
   toDivPlace.innerHTML = '';
   var url;
-  console.log(details.photos);
-  console.log(!details.photos);
+  // console.log(details.photos[0]);
+  // console.log(details.reference);
+  console.dir(details);
+  // console.log(details['photos'][0]);
   
-  // if(typeof details.photos !== 'undefined' || !details.photos){
-  //   url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
-  // }
-  // else{
-  //   url = '';
-  // }
-  
+  if(typeof details.photos !== 'undefined'){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = 'http://localhost/sig/assets/img/empty.png';
+  }
+
+  if(typeof details.opening_hours === 'undefined'){
+    var open = "Tidak ada keterangan jam operasional"
+  }
+  else if(details.opening_hours.open_now){
+    var open = "Buka sekarang";
+  }
+  else{
+    var open = "Sedang tutup";
+  }
   var str = details.name.replace(/\s+/g, '');
 
   toDivPlace.innerHTML += 
@@ -240,7 +253,7 @@ function showToDiv(details, status){
         '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row" style="margin-bottom:0px;"><div class="col s8"><button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button></div> <div class="col s4" id="dist"></div></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -263,13 +276,13 @@ function showToDiv(details, status){
               '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
             '</div>'+
           '</div>'+
-          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+          '<div class="col s10 valign">'+open+'</div>'+
         '</div>'+
       '</div>';
 }
 
 function createMarkerDB(res){
-
+  var service = new google.maps.places.PlacesService(map);
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   var lat = res.latitude;
   var lng = res.longitude;
@@ -278,16 +291,27 @@ function createMarkerDB(res){
       content: res.nama
   });
 
+  if(res.kategori==1){
+    var cat = "pharmacy";
+  }
+  else if(res.kategori==2){
+    var cat = "hospital";
+  }
+
   var marker = new google.maps.Marker({
     map: map,
     position: new google.maps.LatLng(lat,lng),
     icon: img,
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    category: cat
   }); 
 
   marker.addListener('click', function() {
     infowindow.open(map, marker);
-  });
+    service.getDetails({
+        placeId: res.id
+      }, showToDiv);
+    });
   markers.push(marker);
   
     // var service = new google.maps.places.PlacesService(map);
@@ -418,26 +442,34 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   // clearMarkers();
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
-  $("#div-place").append(str + " km") ;
+  $("#dist").append(str + " km") ;
 
 }
 
 showDiv = function showType(category) {
-    for (i = 0; i < markers.length; i++) {
+    if(category=="all"){
+      console.log("YA");
+      for (i = 0; i < markers.length; i++) {
         marker = markers[i];
-        // If is same category or category not picked
-        if (marker.category == category || category.length === 0) {
-            marker.setVisible(true);
-        }
-        else if(marker.category=="home"){
-          marker.setVisible(true);
-        }
-        // Categories don't match 
-        else {
-            marker.setVisible(false);
-        }
+        marker.setVisible(true);
+      }
     }
-
+    else{
+      for (i = 0; i < markers.length; i++) {
+          marker = markers[i];
+          // If is same category or category not picked
+          if (marker.category == category || category.length === 0) {
+              marker.setVisible(true);
+          }
+          else if(marker.category=="home"){
+            marker.setVisible(true);
+          }
+          // Categories don't match 
+          else {
+              marker.setVisible(false);
+          }
+      }
+    }
        
 }
 

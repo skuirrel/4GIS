@@ -97,6 +97,11 @@ input.form-search{
   margin: 0px !important;
 }
 
+#dist{
+  margin-top: 16px;
+  font-size: 18px;
+  text-align: right;
+}
 
 
 @font-face{
