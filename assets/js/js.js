@@ -188,11 +188,9 @@ function createMarker(place) {
     map: map,
     position: place.geometry.location,
     icon: image,
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    category: place.types[0]
   });
-
-
-  marker.category = "pharmacy";
 
   marker.addListener('click', function() {
     infowindow.open(map, marker);
@@ -373,7 +371,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
 }
 
 showDiv = function showType(category) {
-    for (i = 0; i < marker.length; i++) {
+    for (i = 0; i < markers.length; i++) {
         marker = markers[i];
         // If is same category or category not picked
         if (marker.category == category || category.length === 0) {
