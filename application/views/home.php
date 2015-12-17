@@ -88,9 +88,11 @@
           
         });
         // $.when(initialize()).then(createMarkerDB());
-        $(window).load(function () {
-          createMarkerDB();
-        });
+
+        // $(window).load(function () {
+        //   createMarkerDB();
+        // });
+
     </script>
   </body>
 </html>

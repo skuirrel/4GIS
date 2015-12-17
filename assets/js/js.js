@@ -15,6 +15,8 @@ var idPlace = [];
 var directionsService;
 var directionsDisplay;
 var directionOn = false;
+var database = [];
+var distanceCompare = [];
 
 
 function initialize() {
@@ -74,6 +76,7 @@ function initialize() {
         for(var i = 0; i < obj.query.length; i++) {
           // console.log(res[i]);
           createMarkerDB(obj.query[i]);
+          database.push({lat: obj.query[i].latitude, lng: obj.query[i].longitude, nama: obj.query[i].nama});
         }
       }
   });
@@ -136,6 +139,7 @@ function showPosition(position) {
 
   window.myLat = position.coords.latitude;
   window.myLng = position.coords.longitude;
+  window.myPos = new google.maps.LatLng(myLat,myLng);
   
   // var mapOptions = {
  //      center: new google.maps.LatLng(position.coords.latitude,position.coords.longitude),
@@ -237,8 +241,40 @@ function createMarkerDB(res){
     // service.getDetails({
     //   placeId: compareId[i].id
     // }, callback2);
-    // console.log("i: "+i);
-  
+    // console.log("i: "+i); 
+}
+
+function createNearestDB(lat, lng, name, myPos){
+  // console.log("MASUK CREATE");
+  var latLngDB = new google.maps.LatLng(lat,lng);
+  distanceCompare.push({position: latLngDB, name: name});
+  setNearestDB(myPos, latLngDB, name);
+}
+
+function setNearestDB(myPos, latLngDB, name){
+  // console.log("MASUK SET");
+  var distance = google.maps.geometry.spherical.computeDistanceBetween(latLngDB, myPos);
+  var setDistance = 600;
+  console.log('Distance of '+latLngDB+ 'and original position' + myPos+ 'Is equal to '+distance);
+  // updateResults();
+  if (distance < setDistance) {
+    addMarker(latLngDB, name);
+    // stopsfound++;
+    // updateResults();
+  }
+}
+
+function addMarker(position, name) {
+  var img = 'http://localhost/sig/assets/img/marker-v-places.png';
+  console.log('Adding Marker ' + name);
+  var marker = new google.maps.Marker({
+      position: position,
+      map: map,
+      title: name,
+      icon: img
+  });
+  // bindInfoWindow(marker, name);
+  markers.push(marker);
 }
 
 function hideMarker(id){
@@ -248,39 +284,6 @@ function hideMarker(id){
     }
   }
 }
-
-// function createMarkerDB(){
-//   console.log("CALLED");
-//   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
-//   console.log("Len: "+compareId.length);
-//   for(var i = 0; i < compareId.length; i++) {
-//     hideMarker(compareId[i].id);
-
-//     var objLatLng = compareId[i].position;
-
-//     var infowindow = new google.maps.InfoWindow({
-//         content: compareId[i].name
-//     });
-
-//     var markernew = new google.maps.Marker({
-//       map: map,
-//       position: objLatLng,
-//       icon: img,
-//       animation: google.maps.Animation.DROP
-//     }); 
-
-//     markernew.addListener('click', function() {
-//       infowindow.open(map, markernew);
-//     });
-//     markers.push(markernew);
-
-//     var service = new google.maps.places.PlacesService(map);
-//     service.getDetails({
-//       placeId: compareId[i].id
-//     }, callback2);
-//     console.log("i: "+i);
-//   }
-// }
 
 function getLocation() {
   var pos = new google.maps.LatLng(myLat,myLng);
@@ -325,92 +328,14 @@ function getNearest(){
       types: ["doctor"]
     }, callback);
 
-    jQuery.ajax({
-      type: "POST",
-      url: "http://localhost/sig/index.php/Sig/showAll/",
-      success: function(res){
-        // if (res){
-        //   var obj = jQuery.parseJSON(res);
-        //   if(obj.bs){
-        //     compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-        //   }
-        // }
-        var obj = jQuery.parseJSON(res);
-        // console.log(obj.query[0].id);
-        for(var i = 0; i < obj.query.length; i++) {
-          // console.log(res[i]);
-          createMarkerDB(obj.query[i]);
-        }
-      }
-  });
+    console.log("Len DB: "+database.length);
+    for(var i = 0; i < database.length; i++) {
+      createNearestDB(database[i].lat, database[i].lng, database[i].nama, myPos);
+      // console.log("PANGGIL CREATE");
+    }
 
 }
 
-function showToDivApotek(res){
-  var url;
-  // if(typeof details.photos !== 'undefined'  || !details.photos){
-  //   url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
-  // }
-  // else{
-  //   url = '';
-  // }
-  url = 'http://localhost/sig/assets/img/'+res.foto1;
-  // var str = details.name.replace(/\s+/g, '');
-  var str = res.nama;
-
-    var alamat;
-    var telepon;
-    var jam_buka;
-    var service = new google.maps.places.PlacesService(map);
-    service.getDetails({
-    placeId: res.id
-  }, function(place, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      console.log("Alamat: "+place.formatted_address);
-      console.log("jam buka: "+place.opening_hours);
-      alamat = place.formatted_address;
-      telepon = place.formatted_phone_number;
-      jam_buka = place.opening_hours;    
-
- 
-  toDivApotek.innerHTML += 
-    '<div class="card col s12 id="'+str+'">'+
-        '<h5>'+res.nama+'</h5>'+
-        // '<h5> id:'+details.id+'</h5>'+
-        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
-        '<button onclick="getDirection('+res.latitude+', '+res.longitude+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> <div class="distance"></div>'+
-        '<div class="row valign-wrapper">'+
-          '<div class="col s2 valign">'+
-            '<div class="chip teal accent-4">'+
-              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
-            '</div>'+
-          '</div>'+
-          '<div class="col s10 valign">'+alamat+'</div>'+
-        '</div>'+
-        '<div class="row valign-wrapper">'+
-          '<div class="col s2 valign">'+
-            '<div class="chip teal accent-4">'+
-              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
-            '</div>'+
-          '</div>'+
-          '<div class="col s10 valign">'+telepon+'</div>'+
-        '</div>'+
-        '<div class="row valign-wrapper">'+
-          '<div class="col s2 valign">'+
-            '<div class="chip teal accent-4">'+
-              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
-            '</div>'+
-          '</div>'+
-          '<div class="col s10 valign">'+jam_buka+'</div>'+
-        '</div>'+
-      '</div>';
-
-      }
-  });
-}
-
-
- 
 function getDirection(latDest, lngDest) {
   
   calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
