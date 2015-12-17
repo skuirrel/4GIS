@@ -25,7 +25,8 @@ function initialize() {
   //DRAW MAP
 
   directionsService = new google.maps.DirectionsService;
-    directionsDisplay = new google.maps.DirectionsRenderer;
+  directionsDisplay = new google.maps.DirectionsRenderer;
+
 
   var mapCanvas = document.getElementById('map');
   var depok = new google.maps.LatLng(-6.3680686,106.82737);
@@ -35,7 +36,7 @@ function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
   map = new google.maps.Map(mapCanvas, mapOptions);
-
+  directionsDisplay.setMap(map);
   //GET CURRENT POSITION
   if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -73,16 +74,8 @@ function initialize() {
       type: "POST",
       url: "http://localhost/sig/index.php/Sig/showAll/",
       success: function(res){
-        // if (res){
-        //   var obj = jQuery.parseJSON(res);
-        //   if(obj.bs){
-        //     compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-        //   }
-        // }
         var obj = jQuery.parseJSON(res);
-        // console.log(obj.query[0].id);
         for(var i = 0; i < obj.query.length; i++) {
-          // console.log(res[i]);
           createMarkerDB(obj.query[i]);
           database.push({lat: obj.query[i].latitude, lng: obj.query[i].longitude, nama: obj.query[i].nama});
         }
@@ -168,7 +161,8 @@ function showPosition(position) {
   var marker = new google.maps.Marker({
     map: map,
     icon: image,
-    position: new google.maps.LatLng(myLat,myLng)
+    position: new google.maps.LatLng(myLat,myLng),
+    category: "home"
   });
 
   markers.push(marker);
@@ -189,14 +183,16 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
   var service = new google.maps.places.PlacesService(map);
 
+  console.log('id '+place.place_id)
   jQuery.ajax({
     type: "POST",
     url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
     success: function(res){
       // if (res){
         var obj = jQuery.parseJSON(res);
-        console.log(obj.bs);
-        if(!obj.bs){
+        var isInList = obj.bs;
+        console.log('ada '+isInList);
+        if(!isInList){
         //   console.log('IYA ADA BRO');
         //   compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
           // console.log("COMPARE");
@@ -232,21 +228,49 @@ function createMarker(place) {
       }
     }
   });
+
+
+
+
+
+
+  // var marker = new google.maps.Marker({
+  //   map: map,
+  //   position: place.geometry.location,
+  //   icon: image,
+  //   animation: google.maps.Animation.DROP,
+  //   category: place.types[0]
+  // });
+
+  // marker.addListener('click', function() {
+  //   infowindow = new google.maps.InfoWindow({
+  //     content: place.name
+  //   });
+
+  //   infowindow.open(map, marker);
+  //   service.getDetails({
+  //     placeId: place.place_id
+  //   }, showToDiv);
+  // });
+  // markers.push(marker);
+  // idPlace.push(place.place_id);
+
+
   // CHECK IN DB
-  jQuery.ajax({
-    type: "POST",
-    url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
-    success: function(res){
-      if (res){
-        var obj = jQuery.parseJSON(res);
-        if(obj.bs){
-          console.log('IYA ADA BRO');
-          compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-          // console.log("COMPARE");
-        }
-      }
-    }
-  });
+  // jQuery.ajax({
+  //   type: "POST",
+  //   url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
+  //   success: function(res){
+  //     if (res){
+  //       var obj = jQuery.parseJSON(res);
+  //       if(obj.bs){
+  //         console.log('IYA ADA BRO');
+  //         compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
+  //         // console.log("COMPARE");
+  //       }
+  //     }
+  //   }
+  // });
 }
 
 function showToDiv(details, status){
@@ -255,6 +279,56 @@ function showToDiv(details, status){
   console.log(details.photos);
   console.log(!details.photos);
   
+  // if(typeof details.photos !== 'undefined' || !details.photos){
+  //   url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  // }
+  // else{
+  //   url = '';
+  // }
+  console.log(details.name.replace(/\s+/g, ''));
+  var str = details.name.replace(/\s+/g, '');
+
+  toDivPlace.innerHTML += 
+    '<div class="card col s12 id="'+str+'">'+
+        '<h5>'+details.name+'</h5>'+
+        // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_address+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_phone_number+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+        '</div>'+
+      '</div>';
+}
+
+function showToDivDB(details, status){
+  toDivPlace.innerHTML = '';
+  
+  console.log(details.photos);
+  console.log(!details.photos);
+  
+  var url = 'http://localhost/sig/assets/img/'+details.place_id+'.jpg';
+  console.log(url);
   // if(typeof details.photos !== 'undefined' || !details.photos){
   //   url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
   // }
@@ -306,7 +380,7 @@ function createMarkerDB(res){
   var service = new google.maps.places.PlacesService(map);
 
   var infowindow = new google.maps.InfoWindow({
-      content: res.nama
+      content: res.nama+" "+res.id
   });
 
   var marker = new google.maps.Marker({
@@ -320,7 +394,7 @@ function createMarkerDB(res){
     infowindow.open(map, marker);
     service.getDetails({
         placeId: res.id
-      }, showToDiv);
+      }, showToDivDB);
     });
   markers.push(marker);
   
@@ -360,7 +434,18 @@ function addMarkerDB(position, name) {
       title: name,
       icon: img
   });
-  // bindInfoWindow(marker, name);
+  
+  marker.addListener('click', function() {
+    infowindow = new google.maps.InfoWindow({
+      content: name
+    });
+
+    infowindow.open(map, marker);
+    service.getDetails({
+      placeId: place.place_id
+    }, showToDiv);
+  });
+
   markers.push(marker);
 }
 
@@ -417,8 +502,7 @@ function getNearest(){
 }
 
 function getDirection(latDest, lngDest) {
-  // directionsService = new google.maps.DirectionsService;
-  //   directionsDisplay = new google.maps.DirectionsRenderer;
+
   calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
 }
 
@@ -445,22 +529,19 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   // clearMarkers();
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
-  $("#demo").append(str + " km") ;
-
-  directionOn = true;
-
-  // var legs = directionsDisplay;
-  // console.log(legs.toSource()+"");
-  // $("#demo").append(" "+legs + " km") ;
+  $("#div-place").append(str + " km") ;
 
 }
 
 showDiv = function showType(category) {
-    for (i = 0; i < marker.length; i++) {
+    for (i = 0; i < markers.length; i++) {
         marker = markers[i];
         // If is same category or category not picked
         if (marker.category == category || category.length === 0) {
             marker.setVisible(true);
+        }
+        else if(marker.category=="home"){
+          marker.setVisible(true);
         }
         // Categories don't match 
         else {

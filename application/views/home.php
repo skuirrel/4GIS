@@ -37,8 +37,8 @@
             <select class="icons" onchange="showDiv(this.value)">
               <option value="0" selected>Semua Kategori</option>
               <option value="pharmacy">Apotek</option>
-              <option value="2">Rumah Sakit</option>
-              <option value="3">Klinik</option>
+              <option value="hospital">Rumah Sakit</option>
+              <option value="doctor">Klinik</option>
             </select>
             <label>Pilih Kategori</label>
           </div>
@@ -90,18 +90,18 @@
           
         });
 
-        $(window).load(function () {
-          // console.log("Length compareId: "+compareId.length);
-          // console.log("Length idPlace: "+idPlace.length);
-          for(var i = 0; i < compareId.length; i++) {
-            if(idPlace.indexOf(compareId[i].id) != -1){
-              console.log("YEY");
-              console.log(i);
-              // markers[i].setMap(null); 
-              markers[i].setVisible(false);
-            }
-          }      
-        });
+        // $(window).load(function () {
+        //   // console.log("Length compareId: "+compareId.length);
+        //   // console.log("Length idPlace: "+idPlace.length);
+        //   for(var i = 0; i < compareId.length; i++) {
+        //     if(idPlace.indexOf(compareId[i].id) != -1){
+        //       console.log("YEY");
+        //       console.log(i);
+        //       // markers[i].setMap(null); 
+        //       markers[i].setVisible(false);
+        //     }
+        //   }      
+        // });
 
     </script>
   </body>
