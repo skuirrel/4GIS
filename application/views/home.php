@@ -53,14 +53,16 @@
 
         <div id="div-all" class="col s12">
           <br>
-          <div id="div-apotek">
+          <div id="div-place">
+          </div>
+          <!-- <div id="div-apotek">
           </div>
           <div id="div-rs" >
           </div>
           <div id="div-klinik">
           </div>
           <div id="div-lain">
-          </div>
+          </div> -->
         </div>
         
       </div>
