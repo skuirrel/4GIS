@@ -23,7 +23,7 @@
       <div class="col s4 sidebar side-nav fixed">
         <div class="header">
           <div class="center-align">
-            <img class="responsive-img" src="<?php echo base_url('assets/img/logocs.png')?>"/>
+            <a href="javascript:location.reload(true);" style="margin-bottom:50px;"><img class="responsive-img" src="<?php echo base_url('assets/img/logocs.png')?>"/></a>
           </div>
           <button onclick="getLocation()" class="btn" id="btn-myloc"><i class="flaticon-home166" style="margin-left: -20px;"></i> Lokasi Sekarang</button>
           <button onclick="getNearest()" class="btn" id="btn-nearest"><i class="flaticon-pin60" style="margin-left: -20px;"></i> Tempat Terdekat</button>
@@ -88,11 +88,18 @@
           
         });
 
-        // $.when(initialize()).then(createMarkerDB());
-
-        // $(window).load(function () {
-        //   createMarkerDB();
-        // });
+        $(window).load(function () {
+          // console.log("Length compareId: "+compareId.length);
+          // console.log("Length idPlace: "+idPlace.length);
+          for(var i = 0; i < compareId.length; i++) {
+            if(idPlace.indexOf(compareId[i].id) != -1){
+              console.log("YEY");
+              console.log(i);
+              // markers[i].setMap(null); 
+              markers[i].setVisible(false);
+            }
+          }      
+        });
 
     </script>
   </body>

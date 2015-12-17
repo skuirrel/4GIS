@@ -133,6 +133,13 @@ function initialize() {
 
 }
 
+function getLocation() {
+  var pos = new google.maps.LatLng(myLat,myLng);
+  // google.maps.event.addListener(marker, 'click', function() {
+   map.panTo(pos);
+  // });  
+}
+
 function showPosition(position) {
   var mapCanvas = document.getElementById('map');
 
@@ -193,21 +200,21 @@ function createMarker(place) {
   //     placeId: place.place_id
   //   }, callback2);
 
-  //CHECK IN DB
-  // jQuery.ajax({
-  //   type: "POST",
-  //   url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
-  //   success: function(res){
-  //     if (res){
-  //       var obj = jQuery.parseJSON(res);
-  //       if(obj.bs){
-  //         console.log('IYA ADA BRO');
-  //         compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-  //         // console.log("COMPARE");
-  //       }
-  //     }
-  //   }
-  // });
+  // CHECK IN DB
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
+    success: function(res){
+      if (res){
+        var obj = jQuery.parseJSON(res);
+        if(obj.bs){
+          console.log('IYA ADA BRO');
+          compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
+          // console.log("COMPARE");
+        }
+      }
+    }
+  });
 }
 
 function createMarkerDB(res){
@@ -231,7 +238,7 @@ function createMarkerDB(res){
     infowindow.open(map, marker);
   });
   markers.push(marker);
-
+  
     // var service = new google.maps.places.PlacesService(map);
     // service.getDetails({
     //   placeId: compareId[i].id
@@ -253,13 +260,13 @@ function setNearestDB(myPos, latLngDB, name){
   console.log('Distance of '+latLngDB+ 'and original position' + myPos+ 'Is equal to '+distance);
   // updateResults();
   if (distance < setDistance) {
-    addMarker(latLngDB, name);
+    addMarkerDB(latLngDB, name);
     // stopsfound++;
     // updateResults();
   }
 }
 
-function addMarker(position, name) {
+function addMarkerDB(position, name) {
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   console.log('Adding Marker ' + name);
   var marker = new google.maps.Marker({
@@ -278,13 +285,6 @@ function hideMarker(id){
       markers[i].setMap(null); 
     }
   }
-}
-
-function getLocation() {
-  var pos = new google.maps.LatLng(myLat,myLng);
-  // google.maps.event.addListener(marker, 'click', function() {
-   map.panTo(pos);
-  // });  
 }
 
 function getNearest(){
@@ -372,4 +372,14 @@ function clearMarkers() {
     marker.setMap(null);
   });
   markers = [];
+}
+
+function hideMarker(id){
+  for(var i = 0; i < idPlace.length; i++) {
+    if(idPlace[i] === id) {
+      console.log("YEY");
+      console.log(idPlace[i]);
+      markers[i].setMap(null); 
+    }
+  }
 }

@@ -135,6 +135,7 @@ function createMarker(place) {
     }, callback2);
 
     // function checkPlace(place){   
+
       jQuery.ajax({
         type: "POST",
         url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
