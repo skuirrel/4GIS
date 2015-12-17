@@ -32,8 +32,7 @@
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
         </div>        
-        <div id="demo"><h2>TESS</h2></div>
-        <button type="button" onclick="loadDoc()">Change Content</button>
+        <div id="demo">TESS</div>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this)">
               <option value="0" selected>Semua Kategori</option>
@@ -60,6 +59,8 @@
           </div>
           <div id="div-klinik">
           </div>
+          <div id="div-lain">
+          </div>
         </div>
         
       </div>
@@ -84,8 +85,12 @@
           $('ul.tabs').tabs();
           $('input#input_text, textarea#textarea1').characterCounter();
           $('select').material_select();
+          
         });
-
+        // $.when(initialize()).then(createMarkerDB());
+        $(window).load(function () {
+          createMarkerDB();
+        });
     </script>
   </body>
 </html>
