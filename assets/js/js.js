@@ -23,6 +23,12 @@ var infowindow = null;
 
 function initialize() {
   //DRAW MAP
+
+  directionsService = new google.maps.DirectionsService;
+  directionsDisplay = new google.maps.DirectionsRenderer;
+  
+  
+
   var mapCanvas = document.getElementById('map');
   var depok = new google.maps.LatLng(-6.3680686,106.82737);
   var mapOptions = {
@@ -31,7 +37,7 @@ function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
   map = new google.maps.Map(mapCanvas, mapOptions);
-
+  directionsDisplay.setMap(map);
   //GET CURRENT POSITION
   if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -67,16 +73,8 @@ function initialize() {
       type: "POST",
       url: "http://localhost/sig/index.php/Sig/showAll/",
       success: function(res){
-        // if (res){
-        //   var obj = jQuery.parseJSON(res);
-        //   if(obj.bs){
-        //     compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-        //   }
-        // }
         var obj = jQuery.parseJSON(res);
-        // console.log(obj.query[0].id);
         for(var i = 0; i < obj.query.length; i++) {
-          // console.log(res[i]);
           createMarkerDB(obj.query[i]);
           database.push({lat: obj.query[i].latitude, lng: obj.query[i].longitude, nama: obj.query[i].nama});
         }
@@ -162,7 +160,8 @@ function showPosition(position) {
   var marker = new google.maps.Marker({
     map: map,
     icon: image,
-    position: new google.maps.LatLng(myLat,myLng)
+    position: new google.maps.LatLng(myLat,myLng),
+    category: "home"
   });
 
   markers.push(marker);
@@ -183,10 +182,6 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
   var service = new google.maps.places.PlacesService(map);
 
-  infowindow = new google.maps.InfoWindow({
-      content: place.name
-  });
-
   var marker = new google.maps.Marker({
     map: map,
     position: place.geometry.location,
@@ -196,9 +191,10 @@ function createMarker(place) {
   });
 
   marker.addListener('click', function() {
-    if (infowindow) {
-        infowindow.close();
-    }
+    infowindow = new google.maps.InfoWindow({
+      content: place.name
+    });
+
     infowindow.open(map, marker);
     service.getDetails({
       placeId: place.place_id
@@ -206,9 +202,6 @@ function createMarker(place) {
   });
   markers.push(marker);
   idPlace.push(place.place_id);
-
-  
-    
 
   // CHECK IN DB
   jQuery.ajax({
@@ -247,7 +240,7 @@ function showToDiv(details, status){
         '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;" disabled><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -333,7 +326,18 @@ function addMarkerDB(position, name) {
       title: name,
       icon: img
   });
-  // bindInfoWindow(marker, name);
+  
+  marker.addListener('click', function() {
+    infowindow = new google.maps.InfoWindow({
+      content: name
+    });
+
+    infowindow.open(map, marker);
+    service.getDetails({
+      placeId: place.place_id
+    }, showToDiv);
+  });
+
   markers.push(marker);
 }
 
@@ -390,7 +394,6 @@ function getNearest(){
 }
 
 function getDirection(latDest, lngDest) {
-  
   calculateAndDisplayRoute(directionsService, directionsDisplay, latDest, lngDest);
 }
 
@@ -412,16 +415,10 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
       window.alert('Directions request failed due to ' + status);
     }
   });
-  clearMarkers();
+  // clearMarkers();
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
-  $("#demo").append(str + " km") ;
-
-  directionOn = true;
-
-  // var legs = directionsDisplay;
-  // console.log(legs.toSource()+"");
-  // $("#demo").append(" "+legs + " km") ;
+  $("#div-place").append(str + " km") ;
 
 }
 
@@ -431,6 +428,9 @@ showDiv = function showType(category) {
         // If is same category or category not picked
         if (marker.category == category || category.length === 0) {
             marker.setVisible(true);
+        }
+        else if(marker.category=="home"){
+          marker.setVisible(true);
         }
         // Categories don't match 
         else {
