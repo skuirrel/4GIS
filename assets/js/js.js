@@ -40,7 +40,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "apotek",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["pharmacy"]
   }, callback);
 
   var service2 = new google.maps.places.PlacesService(map);
@@ -48,7 +48,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "rumah sakit",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["hospital"]
   }, callback);
 
   var service3 = new google.maps.places.PlacesService(map);
@@ -56,7 +56,7 @@ function initialize() {
     location: depok,
     radius: 2000,
     name: "klinik",
-    types: ["hospital", "pharmacy", "dentist", "doctor"]
+    types: ["doctor"]
   }, callback);
     
   jQuery.ajax({
@@ -109,7 +109,8 @@ function initialize() {
         icon: image,
         title: place.name,
         position: place.geometry.location,
-        animation: google.maps.Animation.DROP
+        animation: google.maps.Animation.DROP,
+        type: type
       })
 
       // Create a marker for each place.
@@ -178,6 +179,10 @@ function createMarker(place) {
     icon: image,
     animation: google.maps.Animation.DROP
   });
+
+
+  marker.category = "pharmacy";
+
   marker.addListener('click', function() {
     infowindow.open(map, marker);
   });
@@ -301,7 +306,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "apotek",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["pharmacy"]
     }, callback);
 
     var service2 = new google.maps.places.PlacesService(map);
@@ -309,7 +314,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "rumah sakit",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["hospital"]
     }, callback);
 
     var service3 = new google.maps.places.PlacesService(map);
@@ -317,7 +322,7 @@ function getNearest(){
       location: myLocation,
       radius: 500,
       name: "klinik",
-      types: ["hospital", "pharmacy", "dentist", "doctor"]
+      types: ["doctor"]
     }, callback);
 
     jQuery.ajax({
@@ -440,6 +445,22 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   // console.log(legs.toSource()+"");
   // $("#demo").append(" "+legs + " km") ;
 
+}
+
+showDiv = function showType(category) {
+    for (i = 0; i < marker.length; i++) {
+        marker = markers[i];
+        // If is same category or category not picked
+        if (marker.category == category || category.length === 0) {
+            marker.setVisible(true);
+        }
+        // Categories don't match 
+        else {
+            marker.setVisible(false);
+        }
+    }
+
+       
 }
 
 function clearMarkers() {
