@@ -32,10 +32,9 @@
           <input id="all-search" class="form-search" type="text" placeholder="Cari seluruh layanan kesehatan...">
           <i class="flaticon-magnifier52" style="margin-top: -51px; position: absolute; margin-left: -5px; color: #26a69a;"></i>
         </div>        
-        <div id="demo">TESS</div>
         <div class="input-field col s12">
             <select class="icons" onchange="showDiv(this.value)">
-              <option value="0" selected>Semua Kategori</option>
+              <option value="all" selected>Semua Kategori</option>
               <option value="pharmacy">Apotek</option>
               <option value="hospital">Rumah Sakit</option>
               <option value="doctor">Klinik</option>

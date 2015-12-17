@@ -18,7 +18,7 @@ var directionsDisplay;
 var directionOn = false;
 var database = [];
 var distanceCompare = [];
-var infowindow = null;
+var infowindow;
 
 
 function initialize() {
@@ -104,6 +104,7 @@ function initialize() {
     // For each place, get the icon, name and location.
     var bounds = new google.maps.LatLngBounds();
     var image = 'http://localhost/sig/assets/img/marker-places.png';
+<<<<<<< HEAD
     // places.forEach(function(place) {
     //   var infowindow = new google.maps.InfoWindow({
     //     content: place.name
@@ -130,6 +131,33 @@ function initialize() {
     //     bounds.extend(place.geometry.location);
     //   }
     // });
+=======
+    places.forEach(function(place) {
+      var infowindow = new google.maps.InfoWindow({
+        content: place.name
+      });
+      var marker = new google.maps.Marker({
+        map: map,
+        icon: image,
+        title: place.name,
+        position: place.geometry.location,
+        animation: google.maps.Animation.DROP
+      })
+
+      // Create a marker for each place.
+      markers.push(marker);
+      marker.addListener('click', function() {
+        infowindow.open(map, marker);
+      });
+
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+    });
+>>>>>>> 42c68332ba778368e11c5c8125131086ab2b42b1
     map.fitBounds(bounds);
   });
 
@@ -183,7 +211,35 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
   var service = new google.maps.places.PlacesService(map);
 
+<<<<<<< HEAD
   console.log('id '+place.place_id)
+=======
+  var marker = new google.maps.Marker({
+    map: map,
+    position: place.geometry.location,
+    icon: image,
+    animation: google.maps.Animation.DROP,
+    category: place.types[0]
+  });
+
+  marker.addListener('click', function() {
+    if(infowindow) {
+      infowindow.close();
+    }
+    infowindow = new google.maps.InfoWindow({
+      content: place.name
+    });
+
+    infowindow.open(map, marker);
+    service.getDetails({
+      placeId: place.place_id
+    }, showToDiv);
+  });
+  markers.push(marker);
+  idPlace.push(place.place_id);
+
+  // CHECK IN DB
+>>>>>>> 42c68332ba778368e11c5c8125131086ab2b42b1
   jQuery.ajax({
     type: "POST",
     url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
@@ -276,6 +332,7 @@ function createMarker(place) {
 function showToDiv(details, status){
   toDivPlace.innerHTML = '';
   var url;
+<<<<<<< HEAD
   console.log(details.photos);
   console.log(!details.photos);
   
@@ -336,6 +393,29 @@ function showToDivDB(details, status){
   //   url = '';
   // }
   console.log(details.name.replace(/\s+/g, ''));
+=======
+  // console.log(details.photos[0]);
+  // console.log(details.reference);
+  console.dir(details);
+  // console.log(details['photos'][0]);
+  
+  if(typeof details.photos !== 'undefined'){
+    url = details.photos[0].getUrl({'maxWidth':400, 'maxHeight':400});
+  }
+  else{
+    url = 'http://localhost/sig/assets/img/empty.png';
+  }
+
+  if(typeof details.opening_hours === 'undefined'){
+    var open = "Tidak ada keterangan jam operasional"
+  }
+  else if(details.opening_hours.open_now){
+    var open = "Buka sekarang";
+  }
+  else{
+    var open = "Sedang tutup";
+  }
+>>>>>>> 42c68332ba778368e11c5c8125131086ab2b42b1
   var str = details.name.replace(/\s+/g, '');
 
   toDivPlace.innerHTML += 
@@ -343,7 +423,7 @@ function showToDivDB(details, status){
         '<h5>'+details.name+'</h5>'+
         // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
         '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
-        '<button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button> '+
+        '<div class="row" style="margin-bottom:0px;"><div class="col s8"><button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button></div> <div class="col s4" id="dist"></div></div>'+
         '<div class="row valign-wrapper">'+
           '<div class="col s2 valign">'+
             '<div class="chip teal accent-4">'+
@@ -366,13 +446,13 @@ function showToDivDB(details, status){
               '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
             '</div>'+
           '</div>'+
-          '<div class="col s10 valign">'+details.opening_hours+'</div>'+
+          '<div class="col s10 valign">'+open+'</div>'+
         '</div>'+
       '</div>';
 }
 
 function createMarkerDB(res){
-
+  var service = new google.maps.places.PlacesService(map);
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   var lat = res.latitude;
   var lng = res.longitude;
@@ -383,18 +463,30 @@ function createMarkerDB(res){
       content: res.nama+" "+res.id
   });
 
+  if(res.kategori==1){
+    var cat = "pharmacy";
+  }
+  else if(res.kategori==2){
+    var cat = "hospital";
+  }
+
   var marker = new google.maps.Marker({
     map: map,
     position: new google.maps.LatLng(lat,lng),
     icon: img,
-    animation: google.maps.Animation.DROP
+    animation: google.maps.Animation.DROP,
+    category: cat
   }); 
 
   marker.addListener('click', function() {
     infowindow.open(map, marker);
     service.getDetails({
         placeId: res.id
+<<<<<<< HEAD
       }, showToDivDB);
+=======
+      }, showToDiv);
+>>>>>>> 42c68332ba778368e11c5c8125131086ab2b42b1
     });
   markers.push(marker);
   
@@ -529,26 +621,34 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, latDest,
   // clearMarkers();
   var str = parseInt(google.maps.geometry.spherical.computeDistanceBetween(myLocation, myDestination))/1000;
 
-  $("#div-place").append(str + " km") ;
+  $("#dist").append(str + " km") ;
 
 }
 
 showDiv = function showType(category) {
-    for (i = 0; i < markers.length; i++) {
+    if(category=="all"){
+      console.log("YA");
+      for (i = 0; i < markers.length; i++) {
         marker = markers[i];
-        // If is same category or category not picked
-        if (marker.category == category || category.length === 0) {
-            marker.setVisible(true);
-        }
-        else if(marker.category=="home"){
-          marker.setVisible(true);
-        }
-        // Categories don't match 
-        else {
-            marker.setVisible(false);
-        }
+        marker.setVisible(true);
+      }
     }
-
+    else{
+      for (i = 0; i < markers.length; i++) {
+          marker = markers[i];
+          // If is same category or category not picked
+          if (marker.category == category || category.length === 0) {
+              marker.setVisible(true);
+          }
+          else if(marker.category=="home"){
+            marker.setVisible(true);
+          }
+          // Categories don't match 
+          else {
+              marker.setVisible(false);
+          }
+      }
+    }
        
 }
 
