@@ -181,6 +181,44 @@ function createMarker(place) {
   var image = 'http://localhost/sig/assets/img/marker-places.png';
   var service = new google.maps.places.PlacesService(map);
 
+  jQuery.ajax({
+    type: "POST",
+    url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
+    success: function(res){
+      // if (res){
+        var obj = jQuery.parseJSON(res);
+        var isInList = obj.bs;
+        console.log('ada '+isInList);
+        if(!isInList){
+        //   console.log('IYA ADA BRO');
+        //   compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
+          // console.log("COMPARE");
+
+          var marker = new google.maps.Marker({
+            map: map,
+            position: place.geometry.location,
+            icon: image,
+            animation: google.maps.Animation.DROP
+          });
+
+          marker.addListener('click', function() {
+            if (infowindow) {
+                infowindow.close();
+            }
+            infowindow = new google.maps.InfoWindow({
+                content: place.name
+            });
+            infowindow.open(map, marker);
+            service.getDetails({
+              placeId: place.place_id
+            }, showToDiv);
+          });
+          markers.push(marker);
+          idPlace.push(place.place_id);
+      }
+    }
+  });
+
   var marker = new google.maps.Marker({
     map: map,
     position: place.geometry.location,
@@ -205,21 +243,6 @@ function createMarker(place) {
   markers.push(marker);
   idPlace.push(place.place_id);
 
-  // CHECK IN DB
-  jQuery.ajax({
-    type: "POST",
-    url: "http://localhost/sig/index.php/Sig/isInList/"+place.place_id,
-    success: function(res){
-      if (res){
-        var obj = jQuery.parseJSON(res);
-        if(obj.bs){
-          console.log('IYA ADA BRO');
-          compareId.push({name: place.name, id:place.place_id, position:place.geometry.location});
-          // console.log("COMPARE");
-        }
-      }
-    }
-  });
 }
 
 function showToDiv(details, status){
@@ -281,15 +304,65 @@ function showToDiv(details, status){
       '</div>';
 }
 
+function showToDivDB(details, status){
+  toDivPlace.innerHTML = '';
+  
+  console.log(details.photos);
+  console.log(!details.photos);
+  
+  var url = 'http://localhost/sig/assets/img/'+details.place_id+'.jpg';
+
+
+  if(typeof details.opening_hours === 'undefined'){
+    var open = "Tidak ada keterangan jam operasional"
+  }
+  else if(details.opening_hours.open_now){
+    var open = "Buka sekarang";
+  }
+  else{
+    var open = "Sedang tutup";
+  }
+  var str = details.name.replace(/\s+/g, '');
+
+  toDivPlace.innerHTML += 
+    '<div class="card col s12 id="'+str+'">'+
+        '<h5>'+details.name+'</h5>'+
+        // // '<h5> lokasi:'+details.coords.latitude+'</h5>'+
+        '<div class="photo"><img class="responsive-img" src="'+url+'"/></div>'+
+        '<div class="row" style="margin-bottom:0px;"><div class="col s8"><button onclick="getDirection('+details.geometry.location.lat()+', '+details.geometry.location.lng()+')" class="btn btn-direction" style="margin-bottom: 20px; margin-top:10px;"><i class="flaticon-location68" style="margin-left: -20px;"></i> Beri Petunjuk Jalan</button></div> <div class="col s4" id="dist"></div></div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-pin60" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_address+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-active5" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+details.formatted_phone_number+'</div>'+
+        '</div>'+
+        '<div class="row valign-wrapper">'+
+          '<div class="col s2 valign">'+
+            '<div class="chip teal accent-4">'+
+              '<i class="flaticon-alarm68" style="margin-left: -20px; color: #fff;"></i>'+
+            '</div>'+
+          '</div>'+
+          '<div class="col s10 valign">'+open+'</div>'+
+        '</div>'+
+      '</div>';
+}
+
+
 function createMarkerDB(res){
   var service = new google.maps.places.PlacesService(map);
   var img = 'http://localhost/sig/assets/img/marker-v-places.png';
   var lat = res.latitude;
   var lng = res.longitude;
-
-  var infowindow = new google.maps.InfoWindow({
-      content: res.nama
-  });
 
   if(res.kategori==1){
     var cat = "pharmacy";
@@ -307,10 +380,16 @@ function createMarkerDB(res){
   }); 
 
   marker.addListener('click', function() {
+    if(infowindow) {
+      infowindow.close();
+    }
+    infowindow = new google.maps.InfoWindow({
+      content: res.nama
+    });
     infowindow.open(map, marker);
     service.getDetails({
         placeId: res.id
-      }, showToDiv);
+      }, showToDivDB);
     });
   markers.push(marker);
   
@@ -352,6 +431,9 @@ function addMarkerDB(position, name) {
   });
   
   marker.addListener('click', function() {
+    if(infowindow) {
+      infowindow.close();
+    }
     infowindow = new google.maps.InfoWindow({
       content: name
     });
