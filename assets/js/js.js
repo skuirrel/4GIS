@@ -104,9 +104,7 @@ function initialize() {
     var bounds = new google.maps.LatLngBounds();
     var image = 'http://localhost/sig/assets/img/marker-places.png';
     places.forEach(function(place) {
-      var infowindow = new google.maps.InfoWindow({
-        content: place.name
-      });
+      
       var marker = new google.maps.Marker({
         map: map,
         icon: image,
@@ -118,6 +116,12 @@ function initialize() {
       // Create a marker for each place.
       markers.push(marker);
       marker.addListener('click', function() {
+        if(infowindow){
+          infowindow.close();
+        }
+        infowindow = new google.maps.InfoWindow({
+          content: place.name
+        });
         infowindow.open(map, marker);
       });
 
